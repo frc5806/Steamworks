@@ -19,9 +19,9 @@ while True:
         # Receive the data in small chunks and retransmit it
         while True:
             data = connection.recv(16)
-            #print( 'received "%s"' % data)
+            print( 'received "%s"' % data)
             if data:
-                if data == b'Begin OpenCV':
+                if data == b'Begin OpenCV\n':
                     print("Connection validated: running command")
                     subprocess.run(["ls", "-l"]) # Exec code here
                 else:

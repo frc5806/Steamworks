@@ -1,7 +1,8 @@
 import grip
 import cv2
+camera = cv2.VideoCapture(1)
 while True:
     g = grip.GripPipeline()
-    capture = cv2.CaptureFromCAM(1)
+    capture = camera.read()
     print g.process(capture)
 

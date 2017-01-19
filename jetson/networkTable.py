@@ -1,15 +1,4 @@
-import time
 from networktables import NetworkTables
-
-
-
-def initTable():
-	NetworkTables.initialize(server=rioIP)
-	return NetworkTables.getTable(tableName)
-
-def pushVals(table, jetsonVals):
-	table.putNumberArray(jetsonVals)
-
 
 class NetworkInterface(object):
 	"""docstring for NetworkInterface."""

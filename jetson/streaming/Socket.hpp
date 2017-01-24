@@ -9,7 +9,6 @@
 #ifndef Socket_hpp
 #define Socket_hpp
 
-#include <string>
 #include <exception>
 
 #include <stdio.h>
@@ -20,6 +19,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#define MAX_MESSAGE_LENGTH 2048
+
+//Server socket code
 class Socket {
 public:
     //Constructor
@@ -40,24 +42,19 @@ public:
     void setSocket(int portNum);
     
     /*!
-     * A function that adds a client. If there is no client, then the function waits for a connectino to be initiated by the client. Will throw an error if the maximum number of sockets (see MAXIMUM_NUMBER_OF_SOCKETS) have already been set, or if an error occurs connecting to the client.
-     */
-    void addClient();
-    
-    /*!
      * A function that sends a message to a single client. An error will be thrown if the socket is not set, if the given index is out of range, or if an error occurs in sending the message.
      *
-     * @param message A std::string of the message to be sent.
+     * @param message A const char * of the message to be sent.
      * @param clientIndex An unsigned int indicating the index of the client to whom to send the message.
      */
-    void send(std::string message, unsigned int clientIndex);
+    void send(const unsigned char* message, unsigned int clientIndex);
     
     /*!
      * A function that sends a message to all clients. An error will be thrown if the socket is not set or if an error occurs in sending the message to any of the clients.
      *
-     * @param message A std::string of the message to be sent.
+     * @param message A const char * of the message to be sent.
      */
-    void broadcast(std::string message);
+    void broadcast(const unsigned char* message);
     
     /*!
      * A function that receives a message from a single client. The function will wait for a short period for the client to send the message, and if the message is not received it will throw an error. An error is also thrown if the index is out of range or if the socket is not set.
@@ -66,7 +63,7 @@ public:
      *
      * @return The received message from the specified client.
      */
-    std::string receive(unsigned int clientIndex);
+    const unsigned char* receive(unsigned int clientIndex);
     
     /*!
      * A function that checks if all clients sent a specific message. This function calls Socket::receive() so if another message has been sent that message may be received instead. This function throws no errors other than those called by Socket::receive().
@@ -75,7 +72,7 @@ public:
      *
      * @return True if all clients sent the same message as the one passed in. False otherwise.
      */
-    bool allReceived(std::string messageToCompare);
+    bool allReceived(const unsigned char* messageToCompare);
     
     /*!
      * @return The number of clients of this socket.
@@ -84,13 +81,12 @@ public:
     
 private:
     //Private properties
-    unsigned int connectedClients = 0;
     
     //These are "file descriptors", which store values from both the socket system call and the accept system call
     int hostSocket;
-    int clientSockets[MAX_NUMBER_OF_CONNECTIONS];
+    int clientSocket;
     int portNumber; //The port nubmer where connections are accepted
-    socklen_t clientAddressSizes[MAX_NUMBER_OF_CONNECTIONS]; //The size of the address of the client, for the accept system call
+    socklen_t clientAddressSize; //The size of the address of the client, for the accept system call
     
     /* struct sockaddr_in
      
@@ -106,7 +102,7 @@ private:
     
     //These are objects of the struct "sockaddr_in", which contain internet addresses
     sockaddr_in serverAddress;
-    sockaddr_in clientAddresses[MAX_NUMBER_OF_CONNECTIONS];
+    sockaddr_in clientAddress;
     
     bool setUp = false; //Represents if the socket has already been set. If not, reading and writing will cause errors
     

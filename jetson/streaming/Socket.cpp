@@ -1,6 +1,6 @@
 //
 //  Socket.cpp
-//  Server_C_Socket
+//  C_Socket
 //
 //  Created by Jake Sanders on 9/5/16.
 //  Copyright © 2016 Jake Sanders. All rights reserved.
@@ -80,16 +80,9 @@ void Socket::setSocket(int portNum) {
      */
     listen(this->hostSocket, MAX_NUMBER_OF_CONNECTIONS);
     
-    this->setUp = true;
-}
-
-void Socket::addClient() {
-    if (this->connectedClients >= MAX_NUMBER_OF_CONNECTIONS)
-        throw std::range_error("Cannot connect more than five socekts");
-    
     //this->connectedClients represents the number of connected clients, and also the next open index of sockets
     
-    this->clientAddressSizes[this->connectedClients] = sizeof(this->clientAddresses[this->connectedClients]);
+    this->clientAddressSize = sizeof(this->clientAddresse);
     
     /* accept()
      The accept() function makes the process block until a connection is formed between the client and the server, with three arguments. It then wakes when the connection is successfully established.
@@ -102,33 +95,29 @@ void Socket::addClient() {
      
      The return value is a socket, passed by a small integer reference.
      */
-    this->clientSockets[this->connectedClients] = accept(this->hostSocket, (struct sockaddr *) &this->clientAddresses[this->connectedClients], &this->clientAddressSizes[this->connectedClients]);
+    this->clientSocket = accept(this->hostSocket, (struct sockaddr *) &this->clientAddress, &this->clientAddressSize);
     
     //Checks for error with accepting
-    if (this->clientSockets[this->connectedClients] < 0)
+    if (this->clientSocket < 0)
         throw std::runtime_error("ERROR accepting client");
     
-    this->connectedClients++;
+    this->setUp = true;
 }
 
-void Socket::send(std::string message, unsigned int clientIndex) {
+void Socket::send(const unsigned char* message) {
     if (!this->setUp)
         throw std::logic_error("Socket not set");
     
-    if (clientIndex >= connectedClients)
-        throw std::range_error("Socket index uninitialized");
+    int strSize = strlen(message);
     
-    char buffer[message.length() + 1]; //This program will read characters from the connection into this buffer
+    char buffer[MAXIMUM_SOCKET_MESSAGE_SIZE]; //This program will read characters from the connection into this buffer
     
     //Initialize the buffer where received info is stored
-    bzero(buffer, message.length() + 1);
+    bzero(buffer, strSize);
     
-    for (int stringIndex = 0; stringIndex < message.length(); stringIndex++) {
+    for (int stringIndex = 0; stringIndex < strSize; stringIndex++) {
         buffer[stringIndex] = message[stringIndex];
     }
-    
-    //Add a terminating character
-    buffer[message.length()] = (char)4;
     
     long messageSize; //Stores the return value from the calls to read() and write() by holding the number of characters either read or written
     
@@ -141,51 +130,18 @@ void Socket::send(std::string message, unsigned int clientIndex) {
      
      The third argument is the length of the message.
      */
-    messageSize = write(this->clientSockets[clientIndex], buffer, strlen(buffer));
+    messageSize = write(this->clientSocket, buffer, strlen(buffer));
     
     //Check for errors writing the message
     if (messageSize < 0)
         throw std::runtime_error("ERROR writing to socket");
 }
 
-void Socket::broadcast(std::string message) {
-    if (!this->setUp)
-        throw std::logic_error("Socket not set");
-    
-    char buffer[message.length() + 1]; //This program will read characters from the connection into this buffer
-    
-    //Initialize the buffer where received info is stored
-    bzero(buffer, message.length() + 1);
-    
-    for (int stringIndex = 0; stringIndex < message.length(); stringIndex++) {
-        buffer[stringIndex] = message[stringIndex];
-    }
-    
-    //Add a terminating character
-    buffer[message.length()] = (char)4;
-    
-    /* write()
-     The write() function will write a message to the client socket, with three arguments.
-     
-     The first argument is the reference for the client's socket.
-     
-     The second argument is the message.
-     
-     The third argument is the length of the message.
-     */
-    for (int socket = 0; socket < this->connectedClients; socket++) {
-        
-        //Checks the return value from the calls to read() and write() by holding the number of characters either read or written. If less than 0, it was an error
-        if (write(this->clientSockets[socket], buffer, strlen(buffer)) < 0)
-            throw std::runtime_error("ERROR writing to socket number " + std::to_string(socket));
-    }
-}
-
-std::string Socket::receive(unsigned int clientIndex) {
+const unsigned char* Socket::receive() {
     if (!this->setUp)
         throw std::logic_error("Socket not set");
         
-    char buffer[MAXIMUM_SOCKET_MESSAGE_SIZE]; //This program will read characters from the connection into this buffer
+    static const unsigned char buffer[MAXIMUM_SOCKET_MESSAGE_SIZE]; //This program will read characters from the connection into this buffer
     
     //Initialize the buffer where received info is stored
     bzero(buffer, MAXIMUM_SOCKET_MESSAGE_SIZE);
@@ -201,26 +157,16 @@ std::string Socket::receive(unsigned int clientIndex) {
      
      The third argument is the maximum number of characters to to be read into the buffer.
      */
-    messageSize = read(this->clientSockets[clientIndex], buffer, MAXIMUM_SOCKET_MESSAGE_SIZE - 1);
+    messageSize = read(this->clientSocket, buffer, MAXIMUM_SOCKET_MESSAGE_SIZE);
     
     //Checks for errors reading from the socket
     if (messageSize < 0)
         throw std::runtime_error("ERROR reading from socket");
     
-    std::string message;
-    
-    for (int iterator = 0; iterator < MAXIMUM_SOCKET_MESSAGE_SIZE; iterator++) {
-        if (buffer[iterator] == (char)4)
-            break;
-        else
-            message.push_back(buffer[iterator]);
-    }
-    
-    //Return the received message to the console
-    return message;
+    return buffer;
 }
 
-bool Socket::allReceived(std::string messageToCompare) {
+bool Socket::allReceived(const unsigned char* messageToCompare) {
     for (int a = 0; a < this->connectedClients; a++) {
         if (this->receive(a) != messageToCompare)
             return false;
@@ -235,8 +181,7 @@ unsigned int Socket::numberOfClients() {
 Socket::~Socket() {
     if (this->setUp) {
         //Properly terminate the sockets
-        for (int clientIndex = 0; clientIndex < this->connectedClients; clientIndex++)
-            close(this->clientSockets[clientIndex]);
+        close(this->clientSocket);
         close(this->hostSocket);
     }
 }

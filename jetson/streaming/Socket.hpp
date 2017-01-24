@@ -20,6 +20,7 @@
 #include <netinet/in.h>
 
 #define MAX_MESSAGE_LENGTH 2048
+#define MAX_NUMBER_OF_CONNECTIONS 5
 
 //Server socket code
 class Socket {
@@ -47,37 +48,14 @@ public:
      * @param message A const char * of the message to be sent.
      * @param clientIndex An unsigned int indicating the index of the client to whom to send the message.
      */
-    void send(const unsigned char* message, unsigned int clientIndex);
-    
-    /*!
-     * A function that sends a message to all clients. An error will be thrown if the socket is not set or if an error occurs in sending the message to any of the clients.
-     *
-     * @param message A const char * of the message to be sent.
-     */
-    void broadcast(const unsigned char* message);
+    void send(const unsigned char* message);
     
     /*!
      * A function that receives a message from a single client. The function will wait for a short period for the client to send the message, and if the message is not received it will throw an error. An error is also thrown if the index is out of range or if the socket is not set.
      *
-     * @param clientIndex An unsigned int indicating the index of the client from whom to receive the message.
-     *
      * @return The received message from the specified client.
      */
-    const unsigned char* receive(unsigned int clientIndex);
-    
-    /*!
-     * A function that checks if all clients sent a specific message. This function calls Socket::receive() so if another message has been sent that message may be received instead. This function throws no errors other than those called by Socket::receive().
-     *
-     * @param messageToCompare The message that is checked with all clients.
-     *
-     * @return True if all clients sent the same message as the one passed in. False otherwise.
-     */
-    bool allReceived(const unsigned char* messageToCompare);
-    
-    /*!
-     * @return The number of clients of this socket.
-     */
-    unsigned int numberOfClients();
+    const unsigned char* receive();
     
 private:
     //Private properties
@@ -105,7 +83,6 @@ private:
     sockaddr_in clientAddress;
     
     bool setUp = false; //Represents if the socket has already been set. If not, reading and writing will cause errors
-    
 };
 
 #endif /* Socket_hpp */

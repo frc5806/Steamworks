@@ -101,8 +101,6 @@ void Socket::setSocket(int portNum) {
     if (this->clientSocket < 0)
         throw std::runtime_error("ERROR accepting client");
     
-    this->receivedMessage = unsigned char[MAX_MESSAGE_LENGTH];
-    
     this->setUp = true;
 }
 
@@ -112,14 +110,8 @@ void Socket::send(const unsigned char* message) {
     
     int strSize = strlen(message);
     
-    char buffer[MAX_MESSAGE_LENGTH]; //This program will read characters from the connection into this buffer
-    
     //Initialize the buffer where received info is stored
-    bzero(buffer, strSize);
-    
-    for (int stringIndex = 0; stringIndex < strSize; stringIndex++) {
-        buffer[stringIndex] = message[stringIndex];
-    }
+    bzero(message, strSize);
     
     long messageSize; //Stores the return value from the calls to read() and write() by holding the number of characters either read or written
     
@@ -132,38 +124,11 @@ void Socket::send(const unsigned char* message) {
      
      The third argument is the length of the message.
      */
-    messageSize = write(this->clientSocket, buffer, strlen(buffer));
+    messageSize = write(this->clientSocket, message, strSize);
     
     //Check for errors writing the message
     if (messageSize < 0)
         throw std::runtime_error("ERROR writing to socket");
-}
-
-unsigned char* Socket::receive() {
-    if (!this->setUp)
-        throw std::logic_error("Socket not set");
-    
-    //Initialize the buffer where received info is stored
-    bzero(this->receivedMessage, MAX_MESSAGE_LENGTH);
-    
-    long messageSize; //Stores the return value from the calls to read() and write() by holding the number of characters either read or written
-    
-    /* read()
-     The read() function will read in info from the client socket, with three arguments. It will block until the client writes and there is something to read in.
-     
-     The first argument is the reference for the client's socket.
-     
-     The second argument is the buffer to store the message.
-     
-     The third argument is the maximum number of characters to to be read into the buffer.
-     */
-    messageSize = read(this->clientSocket, this->receivedMessage, MAX_MESSAGE_LENGTH);
-    
-    //Checks for errors reading from the socket
-    if (messageSize < 0)
-        throw std::runtime_error("ERROR reading from socket");
-    
-    return this->receivedMessage;
 }
 
 Socket::~Socket() {

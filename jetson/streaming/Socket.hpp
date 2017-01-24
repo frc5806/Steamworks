@@ -49,11 +49,6 @@ public:
      */
     void send(const unsigned char* message);
     
-    /*!
-     * A function that receives a message from a single client. The function will wait for a short period for the client to send the message, and if the message is not received it will throw an error. An error is also thrown if the index is out of range or if the socket is not set.
-     */
-    const unsigned char* receive();
-    
 private:
     //Private properties
     
@@ -80,10 +75,6 @@ private:
     sockaddr_in clientAddress;
     
     bool setUp = false; //Represents if the socket has already been set. If not, reading and writing will cause errors
-    
-    //A pointer representing the c string of the previous message sent
-    //Freed every time receive is called
-    unsigned char * receivedMessage;
 };
 
 #endif /* Socket_hpp */

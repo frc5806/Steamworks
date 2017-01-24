@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	DriveTrain train = new DriveTrain();
-	Joystick stick = new Joystick(0);
+	DriveTrain train;
+	Joystick stick;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -24,6 +24,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		train = new DriveTrain();
+		stick = new Joystick(0);
 	}
 
 	/**
@@ -46,6 +48,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
+		//train.driveFoward(.11, Math.PI*6);
+		train.turn(.2, 90);
 	}
 
 	

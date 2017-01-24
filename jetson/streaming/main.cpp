@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
         Mat frame;
         cap >> frame;
         if( frame.empty() ) break; // end of video stream
-        unsigned char* dataMat = frame.data;
+        char* dataMat = frame.data;
         //imshow("this is you, smile! :)", frame);
         //if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC
     }

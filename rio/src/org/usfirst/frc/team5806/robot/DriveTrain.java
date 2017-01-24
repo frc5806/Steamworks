@@ -40,14 +40,14 @@ public class DriveTrain {
 		do {
 			distanceTraveled = ((Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)+Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST)) / 2.0);
 			
-			//TODO: correct turning; see if we r using right dirs
 			double speedCorrection = TURN_CORRECTION_DAMPENING * (ahrs.getAngle() - startingAngle);
+			lMotor.set(speed-speedCorrection);
+			rMotor.set(speed+speedCorrection);
+			
 			SmartDashboard.putNumber("angleDif", ahrs.getAngle() - startingAngle);
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
 			SmartDashboard.putNumber("distanceTraveled", distanceTraveled);
 			updateDashboard();
-			lMotor.set(speed-speedCorrection);
-			rMotor.set(speed+speedCorrection);
 		} while(distanceTraveled < distance);
 	}
 	
@@ -55,15 +55,22 @@ public class DriveTrain {
 	 * Set speed to negative to turn the opposite direction.
 	 */
 	public void turn(double speed, double degrees) {
+		lEncoder.reset();
+		rEncoder.reset();
+		
 		double startingAngle = ahrs.getAngle();
 		double degreesTurned;
 		do { 
 			degreesTurned = Math.abs(ahrs.getAngle() - startingAngle);
 			
+			// Pos if left dist greater than right
 			double speedCorrection = SPEED_CORRECTION_DAMPENING * Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST);
-			
+			// If left dist greater than right, slow down left and speed up right
 			lMotor.set(Math.max(speed-speedCorrection, 0));
-			rMotor.set(Math.min(-speed-speedCorrection, 0));
+			rMotor.set(Math.min(-(speed+speedCorrection), 0));
+			
+			SmartDashboard.putNumber("speedCorrection", speedCorrection);
+			updateDashboard();
 		} while(degreesTurned < degrees);
 		lMotor.set(0);
 		rMotor.set(0);
@@ -87,7 +94,6 @@ public class DriveTrain {
 		SmartDashboard.putNumber("rEncoderDist", rEncoder.get()*RIGHT_ENCODER_TO_DIST);
 		SmartDashboard.putBoolean("lEncoderStopped", lEncoder.getStopped());
 		SmartDashboard.putBoolean("rEncoderStopped", rEncoder.getStopped());
-
 	}
 		
 }

@@ -83,6 +83,10 @@ private:
     sockaddr_in clientAddress;
     
     bool setUp = false; //Represents if the socket has already been set. If not, reading and writing will cause errors
+    
+    //A pointer representing the c string of the previous message sent
+    //Freed every time receive is called
+    unsigned char * receivedMessage;
 };
 
 #endif /* Socket_hpp */

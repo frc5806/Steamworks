@@ -46,14 +46,11 @@ public:
      * A function that sends a message to a single client. An error will be thrown if the socket is not set, if the given index is out of range, or if an error occurs in sending the message.
      *
      * @param message A const char * of the message to be sent.
-     * @param clientIndex An unsigned int indicating the index of the client to whom to send the message.
      */
     void send(const unsigned char* message);
     
     /*!
      * A function that receives a message from a single client. The function will wait for a short period for the client to send the message, and if the message is not received it will throw an error. An error is also thrown if the index is out of range or if the socket is not set.
-     *
-     * @return The received message from the specified client.
      */
     const unsigned char* receive();
     

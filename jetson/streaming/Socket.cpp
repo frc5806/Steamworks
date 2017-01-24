@@ -142,11 +142,8 @@ void Socket::send(const unsigned char* message) {
 unsigned char* Socket::receive() {
     if (!this->setUp)
         throw std::logic_error("Socket not set");
-        
-//    static const unsigned char buffer[MAX_MESSAGE_LENGTH]; //This program will read characters from the connection into this buffer
     
     //Initialize the buffer where received info is stored
-//    bzero(buffer, MAX_MESSAGE_LENGTH);
     bzero(this->receivedMessage, MAX_MESSAGE_LENGTH);
     
     long messageSize; //Stores the return value from the calls to read() and write() by holding the number of characters either read or written
@@ -160,7 +157,6 @@ unsigned char* Socket::receive() {
      
      The third argument is the maximum number of characters to to be read into the buffer.
      */
-//    messageSize = read(this->clientSocket, buffer, MAX_MESSAGE_LENGTH);
     messageSize = read(this->clientSocket, this->receivedMessage, MAX_MESSAGE_LENGTH);
     
     //Checks for errors reading from the socket

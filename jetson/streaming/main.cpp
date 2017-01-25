@@ -46,14 +46,14 @@ int main(int argc, char** argv) {
         imshow("Compressed image", compressedMat);
         
         /*
-        size_t sizeInBytes = frame.step[0] * frame.rows;
-        cout << "frame: " << sizeInBytes << ", " ;
-        size_t sizeInBytesOfCompressed = sizeof(vector<int>) + (sizeof(int) * buff.size());
-        cout << "compressed: " << sizeInBytesOfCompressed << ", ";
-        sum += sizeInBytesOfCompressed;
-        average = sum/counter;
-        cout << "avg: " << average << "\n";
-        */
+         size_t sizeInBytes = frame.step[0] * frame.rows;
+         cout << "frame: " << sizeInBytes << ", " ;
+         size_t sizeInBytesOfCompressed = sizeof(vector<int>) + (sizeof(int) * buff.size());
+         cout << "compressed: " << sizeInBytesOfCompressed << ", ";
+         sum += sizeInBytesOfCompressed;
+         average = sum/counter;
+         cout << "avg: " << average << "\n";
+         */
         //imshow("this is you, smile! :)", frame);
         if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC
         //counter++;

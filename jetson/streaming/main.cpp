@@ -7,8 +7,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include "Socket.hpp"
 
 #define QUALITY 9
+#define PORT 5439
 
 using namespace cv;
 using namespace std;
@@ -21,11 +23,9 @@ void error(const char *msg)
 
 int main(int argc, char** argv) {
     VideoCapture cap;
-    // open the default camera, use something different from 0 otherwise;
-    // Check VideoCapture documentation.
-    //int counter = 1;
-    //int sum = 0;
-    //int average = 0;
+    Socket socket;
+    socket.setSocket(PORT);
+    
     if(!cap.open(0))
         return 0;
     while (true) {
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
         Mat compressedMat;
         cap >> frame;
         if( frame.empty() ) break; // end of video stream
-        //unsigned char* dataMat = frame.data;
+        
         vector<uchar> buff;
         
         vector<int> p;
@@ -45,18 +45,15 @@ int main(int argc, char** argv) {
         imdecode(buff, CV_LOAD_IMAGE_COLOR, &compressedMat);
         imshow("Compressed image", compressedMat);
         
-        /*
-         size_t sizeInBytes = frame.step[0] * frame.rows;
-         cout << "frame: " << sizeInBytes << ", " ;
-         size_t sizeInBytesOfCompressed = sizeof(vector<int>) + (sizeof(int) * buff.size());
-         cout << "compressed: " << sizeInBytesOfCompressed << ", ";
-         sum += sizeInBytesOfCompressed;
-         average = sum/counter;
-         cout << "avg: " << average << "\n";
-         */
-        //imshow("this is you, smile! :)", frame);
+        unsigned char data[buff.size()];
+        
+        for (int i = 0; i < buff.size(); i++) {
+            data[i] = buff[i];
+        }
+        
+        socket.send(data, (unsigned int)buff.size());
+        
         if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC
-        //counter++;
     }
     // the camera will be closed automatically upon exit
     // cap.close();

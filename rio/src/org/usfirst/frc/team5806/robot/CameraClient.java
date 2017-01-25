@@ -1,57 +1,43 @@
 import java.net.*;
 import java.io.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import javax.imageio.ImageIO;
 
 public class CameraClient {
-    private String serverName;
-    private InetAddress staticIP;
+    private String hostIP;
     private int serverPort;
     private Socket client;
     private OutputStream out;
     private InputStream in;
     
-    public CameraClient(String serverName, int serverPort) {
-        this.serverName = serverName;
-        this.serverPort = serverPort;
-    }
-    public CameraClient(InetAddress staticIP, int serverPort) {
-        //Alternative constructor for referencing cam by a static ip rather
-        //than a saved name on the LAN.
-        this.staticIP = staticIP;
+    public CameraClient(String hostIP, int serverPort) {
+        this.hostIP = hostIP;
         this.serverPort = serverPort;
     }
     public CameraClient() {}
-    public void setServerName(String name) {
-        this.serverName = name;
-    }
-    public void setStaticIP(InetAddress staticIP) {
-        this.staticIP = staticIP;
+    public void sethostIP(String hostIP) {
+        this.hostIP = hostIP;
     }
     public void setServerPort(int port) {
         this.serverPort = port;
     }
-    public String getServerName() {
-        return serverName;
-    }
-    public String getStaticIPName() {
-        return staticIP.toString();
+    public String getHostIP() {
+        return hostIP;
     }
     public int getServerPort() {
         return serverPort;
     }
     public void initSocket() {
         try {
-            if (staticIP == null) {
-                this.client = new Socket(serverName, serverPort);
-            } else {
-                this.client = new Socket(staticIP, serverPort);
-            }
+            this.client = new Socket(hostIP, serverPort);
             this.out = this.client.getOutputStream();
             this.in = this.client.getInputStream();
+            System.out.println("Client socket successfully initialized.");
         } catch (IOException e) {
             System.out.println("Error Initializing Socket or Input/Output Streams");
         }
-        System.out.println("Client socket successfully initialized.");
+        
     }
     public void writeString(String s) {
         try {
@@ -86,13 +72,29 @@ public class CameraClient {
         }
         return bs.toByteArray();
     }
-    /*public BufferedImage readImage(int width, int height) {
-        byte[] inBytes = readSocketData();
-        
-    }*/
+    public BufferedImage readImage() {
+        BufferedImage img = null;
+        try {
+            byte[] inBytes = readSocketBytes();
+            InputStream imageIn = new ByteArrayInputStream(inBytes);
+            img = ImageIO.read(imageIn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return img;
+    }
     public static void main(String[] args) {
-        CameraClient driveStation = new CameraClient("", 999);
-        String line = driveStation.readSocketString();
-        System.out.println(line);
+        CameraClient driveStation = new CameraClient("172.17.125.210", 5439);
+        driveStation.initSocket();
+        byte[] bytes = driveStation.readSocketBytes();
+        
+        System.out.println(Arrays.toString(bytes));
+        
+        try {  
+            BufferedImage img = driveStation.readImage();
+            ImageIO.write(img, "jpg", new File("socketTest.jpg"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

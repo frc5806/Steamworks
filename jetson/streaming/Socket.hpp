@@ -9,8 +9,6 @@
 #ifndef Socket_hpp
 #define Socket_hpp
 
-#include <exception>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,8 +44,9 @@ public:
      * A function that sends a message to a single client. An error will be thrown if the socket is not set, if the given index is out of range, or if an error occurs in sending the message.
      *
      * @param message A const char * of the message to be sent.
+     * @param strSize An unsigned int representing the length of the message
      */
-    void send(const unsigned char* message);
+    void send(const unsigned char* message, unsigned int strSize);
     
 private:
     //Private properties

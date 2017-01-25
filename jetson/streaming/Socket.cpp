@@ -30,7 +30,7 @@ void Socket::setSocket(int portNum) {
     
     //If socket() returns an error, -1.
     if (this->hostSocket < 0)
-        throw std::runtime_error("Error opening socket");
+        throw "Error opening socket";
     
     /* bzero()
      The bzero() function sets all values in a buffer to zero, with two parameters.
@@ -67,7 +67,7 @@ void Socket::setSocket(int portNum) {
      This function can fail for multiple reasons. The most likely one is if the port is already in use.
      */
     if (bind(this->hostSocket, (struct sockaddr *) &this->serverAddress, sizeof(this->serverAddress)) < 0)
-        throw std::runtime_error("ERROR binding socket to host");
+        throw "ERROR binding socket to host";
     
     /* listen()
      The listen() function listens for connections on the socket, with two arguments.
@@ -82,7 +82,7 @@ void Socket::setSocket(int portNum) {
     
     //this->connectedClients represents the number of connected clients, and also the next open index of sockets
     
-    this->clientAddressSize = sizeof(this->clientAddresse);
+    this->clientAddressSize = sizeof(this->clientAddress);
     
     /* accept()
      The accept() function makes the process block until a connection is formed between the client and the server, with three arguments. It then wakes when the connection is successfully established.
@@ -99,19 +99,14 @@ void Socket::setSocket(int portNum) {
     
     //Checks for error with accepting
     if (this->clientSocket < 0)
-        throw std::runtime_error("ERROR accepting client");
+        throw "ERROR accepting client";
     
     this->setUp = true;
 }
 
-void Socket::send(const unsigned char* message) {
+void Socket::send(const unsigned char* message, unsigned int strSize) {
     if (!this->setUp)
-        throw std::logic_error("Socket not set");
-    
-    int strSize = strlen(message);
-    
-    //Initialize the buffer where received info is stored
-    bzero(message, strSize);
+        throw "Socket not set";
     
     long messageSize; //Stores the return value from the calls to read() and write() by holding the number of characters either read or written
     
@@ -128,7 +123,7 @@ void Socket::send(const unsigned char* message) {
     
     //Check for errors writing the message
     if (messageSize < 0)
-        throw std::runtime_error("ERROR writing to socket");
+        throw "ERROR writing to socket";
 }
 
 Socket::~Socket() {

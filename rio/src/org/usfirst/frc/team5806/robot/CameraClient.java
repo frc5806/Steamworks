@@ -9,17 +9,17 @@ public class CameraClient {
 	private BufferedWriter out;
 	private BufferedReader in;
 	
-	public DriveStationCameraClient(String serverName, int serverPort) {
+	public CameraClient(String serverName, int serverPort) {
 		this.serverName = serverName;
 		this.serverPort = serverPort;
 	}
-	public DriveStationCameraClient(String staticIP, int serverPort) {
+	public CameraClient(String staticIP, int serverPort) {
 		//Alternative constructor for referencing cam by a static ip rather
 		//than a saved name on the LAN.
 		this.staticIP = INetAddress.getByAddress(staticIP);
 		this.serverPort = serverPort;
 	}
-	public DriverStationCameraClient() {}
+	public CameraClient() {}
 	public void setServerName(String name) {
 		this.serverName = name;
 	}

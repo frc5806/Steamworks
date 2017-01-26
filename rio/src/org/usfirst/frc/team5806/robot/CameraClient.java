@@ -1,8 +1,10 @@
 import java.net.*;
 import java.io.*;
-import java.awt.image.BufferedImage;
+import java.awt.*;
+import java.awt.image.*;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class CameraClient {
     private String hostIP;
@@ -72,12 +74,14 @@ public class CameraClient {
         }
         return bs.toByteArray();
     }
-    public BufferedImage readImage() {
+    public BufferedImage readImage(int width, int height) {
         BufferedImage img = null;
         try {
             byte[] inBytes = readSocketBytes();
-            InputStream imageIn = new ByteArrayInputStream(inBytes);
-            img = ImageIO.read(imageIn);
+            DataBuffer buffer = new DataBufferByte(inBytes, inBytes.length);
+            WritableRaster raster = Raster.createInterleavedRaster(buffer, width, height, 3*width, 3, new int[]{0,1,2}, (Point)null);
+            ColorModel cm = new ComponentColorModel(ColorModel.getRGBdefault().getColorSpace(), false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+            img = new BufferedImage(cm, raster, true, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,10 +95,23 @@ public class CameraClient {
         System.out.println(Arrays.toString(bytes));
         
         try {  
-            BufferedImage img = driveStation.readImage();
-            ImageIO.write(img, "jpg", new File("socketTest.jpg"));
+            BufferedImage img = driveStation.readImage(10,10);
+            DisplayImage testImg = new DisplayImage(img);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    private static class DisplayImage {
+        public DisplayImage(BufferedImage img) throws IOException {
+            ImageIcon icon = new ImageIcon(img);
+            JFrame frame = new JFrame();
+            frame.setLayout(new FlowLayout());
+            frame.setSize(200,300);
+            JLabel lbl = new JLabel();
+            lbl.setIcon(icon);
+            frame.add(lbl);
+            frame.setVisible(true);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         }
     }
 }

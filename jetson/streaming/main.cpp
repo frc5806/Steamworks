@@ -7,24 +7,25 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <unistd.h>
 #include "Socket.hpp"
 
 #define QUALITY 9
-#define PORT 5439
+#define PORT 5440
+#define ENDCHAR 'e'
 
 using namespace cv;
 using namespace std;
-
-void error(const char *msg)
-{
-    perror(msg);
-    exit(1);
-}
 
 int main(int argc, char** argv) {
     VideoCapture cap;
     Socket socket;
     socket.setSocket(PORT);
+    
+    vector<uchar> buff;
+    vector<int> p;
+    
+    unsigned int usecs = 1000;
     
     if(!cap.open(0))
         return 0;
@@ -33,27 +34,34 @@ int main(int argc, char** argv) {
         Mat compressedMat;
         cap >> frame;
         if( frame.empty() ) break; // end of video stream
+    
+        buff.clear();
+        p.clear();
         
-        vector<uchar> buff;
-        
-        vector<int> p;
         p.push_back(CV_IMWRITE_JPEG_QUALITY);
         p.push_back(QUALITY);
         
         imencode(".jpg", frame, buff, p);
         
+        /*
         imdecode(buff, CV_LOAD_IMAGE_COLOR, &compressedMat);
         imshow("Compressed image", compressedMat);
-        
-        unsigned char data[buff.size()];
+        */
+    
+        unsigned char data[buff.size()+1];
         
         for (int i = 0; i < buff.size(); i++) {
             data[i] = buff[i];
         }
         
-        socket.send(data, (unsigned int)buff.size());
+        data[buff.size()] = ENDCHAR;
+        
+        socket.send(data, (unsigned int)buff.size()+1);
+        //socket.send((const unsigned char *)ENDCHAR, 1);
         
         if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC
+        
+        usleep(usecs);
     }
     // the camera will be closed automatically upon exit
     // cap.close();

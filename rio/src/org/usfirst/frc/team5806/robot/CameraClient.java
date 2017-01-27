@@ -77,25 +77,20 @@ public class CameraClient {
     public BufferedImage readImage(int width, int height) {
         BufferedImage img = null;
         try {
-            byte[] inBytes = readSocketBytes();
-            DataBuffer buffer = new DataBufferByte(inBytes, inBytes.length);
-            WritableRaster raster = Raster.createInterleavedRaster(buffer, width, height, 3*width, 3, new int[]{0,1,2}, (Point)null);
-            ColorModel cm = new ComponentColorModel(ColorModel.getRGBdefault().getColorSpace(), false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-            img = new BufferedImage(cm, raster, true, null);
+            byte[] bytes = readSocketBytes();
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            img = ImageIO.read(bais);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error creating image from bytes.");
         }
         return img;
     }
     public static void main(String[] args) {
-        CameraClient driveStation = new CameraClient("172.17.125.210", 5439);
+        CameraClient driveStation = new CameraClient("172.17.126.16", 5439);
         driveStation.initSocket();
-        byte[] bytes = driveStation.readSocketBytes();
-        
-        System.out.println(Arrays.toString(bytes));
         
         try {  
-            BufferedImage img = driveStation.readImage(10,10);
+            BufferedImage img = driveStation.readImage(1000,1000);
             DisplayImage testImg = new DisplayImage(img);
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,13 +100,12 @@ public class CameraClient {
         public DisplayImage(BufferedImage img) throws IOException {
             ImageIcon icon = new ImageIcon(img);
             JFrame frame = new JFrame();
-            frame.setLayout(new FlowLayout());
+            JLabel lbl = new JLabel(icon);
             frame.setSize(200,300);
-            JLabel lbl = new JLabel();
-            lbl.setIcon(icon);
             frame.add(lbl);
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.pack();
         }
     }
 }

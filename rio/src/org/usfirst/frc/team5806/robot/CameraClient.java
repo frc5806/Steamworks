@@ -65,19 +65,31 @@ public class CameraClient {
         ByteArrayOutputStream bs = null;
         try {   
             bs = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            for (int s = 0; (s = in.read(buffer)) != -1; ) {
-                bs.write(buffer, 0, s);
+            byte[] buffer = new byte[10000];
+            int s = 0;
+            while ((s = in.read(buffer, 0, 10000)) != -1) {
+                if ((char)buffer[s-1] == 'e'){
+                    System.out.println("GOTEEEEMM");
+                    System.out.println(s-1);
+                    bs.write(buffer, 0, s-1);
+                    break;
+                } else {
+                    bs.write(buffer, 0, s);
+                }
+            }
+            if (s == -1) {
+                return null;
             }
         } catch (IOException e) {
             System.out.println("Error reading bytes from socket.");
         }
         return bs.toByteArray();
     }
-    public BufferedImage readImage(int width, int height) {
+    public BufferedImage readImage() {
         BufferedImage img = null;
         try {
             byte[] bytes = readSocketBytes();
+            if (bytes == null) return null;
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             img = ImageIO.read(bais);
         } catch (Exception e) {
@@ -86,26 +98,44 @@ public class CameraClient {
         return img;
     }
     public static void main(String[] args) {
-        CameraClient driveStation = new CameraClient("172.17.126.16", 5439);
+        CameraClient driveStation = new CameraClient("172.17.126.16", 5441);
         driveStation.initSocket();
         
-        try {  
-            BufferedImage img = driveStation.readImage(1000,1000);
-            DisplayImage testImg = new DisplayImage(img);
+        BufferedImage camFrame = null;
+        DisplayImage window = null;
+        try {
+            camFrame = driveStation.readImage();
+            window = new DisplayImage(camFrame);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        while (true) {
+            try {  
+                camFrame = driveStation.readImage();
+                if (camFrame == null) break;
+                window.updateImage(camFrame);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
     private static class DisplayImage {
+        private JLabel lbl;
         public DisplayImage(BufferedImage img) throws IOException {
             ImageIcon icon = new ImageIcon(img);
             JFrame frame = new JFrame();
-            JLabel lbl = new JLabel(icon);
+            lbl = new JLabel();
+            lbl.setIcon(icon);
             frame.setSize(200,300);
             frame.add(lbl);
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
+        }
+        public void updateImage(BufferedImage img) {
+            lbl.setIcon(new ImageIcon(img));
+            System.out.println("Updating Image");
         }
     }
 }

@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain {
 	static final double MAX_SPEED = 0.5;
 	static final double MIN_SPEED = 0.1;
-	static final double ONE_ROTATION = 6*Math.PI;
+	static final double FORWARD_DAMPENING_THRESHOLD = 6*Math.PI/2.0;
+	static final double TURN_DAMPENING_THRESHOLD = 30.0;
 	static final double LEFT_ENCODER_TO_DIST = 6*Math.PI / 355.0;
 	static final double RIGHT_ENCODER_TO_DIST = 6*Math.PI / 359.0;
-	static final double TURN_CORRECTION_DAMPENING = 1/10.0;
-	static final double SPEED_CORRECTION_DAMPENING = 0.1;
+	static final double FORWARD_CORRECTION_FACTOR = 0.1;
+	static final double TURN_CORRECTION_FACTOR = 0.1;
 	
 	Encoder lEncoder;
 	Encoder rEncoder;
@@ -49,15 +50,14 @@ public class DriveTrain {
 		do {
 			distanceTraveled = ((Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)+Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST)) / 2.0);
 			
-			double speedCorrection = SPEED_CORRECTION_DAMPENING * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
+			double speedCorrection = FORWARD_CORRECTION_FACTOR * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
 			speedCorrection = Math.min(Math.max(speedCorrection, -startingSpeed), startingSpeed);
 			lMotor.set(speed-speedCorrection);
 			rMotor.set(speed+speedCorrection);
 			
-			SmartDashboard.putNumber("angleDif", ahrs.getAngle() - startingAngle);
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
 			SmartDashboard.putNumber("distanceTraveled", distanceTraveled);
-			if(distance-distanceTraveled < ONE_ROTATION/2.0) speed = Math.max(Math.min(0.10, startingSpeed), ((distance-distanceTraveled)/(ONE_ROTATION/2.0))*startingSpeed);
+			if(distance-distanceTraveled < FORWARD_DAMPENING_THRESHOLD) speed = Math.max(Math.min(0.10, startingSpeed), ((distance-distanceTraveled)/FORWARD_DAMPENING_THRESHOLD)*startingSpeed);
 			updateDashboard();
 		} while(distanceTraveled < distance);
 		lMotor.set(0);
@@ -73,19 +73,18 @@ public class DriveTrain {
 		rEncoder.reset();
 		
 		double startingAngle = ahrs.getAngle();
+		double startingSpeed = speed;
 		double degreesTurned;
 		do { 
 			degreesTurned = Math.abs(ahrs.getAngle() - startingAngle);
 			
-			// Pos if left dist greater than right
-			double speedCorrection = SPEED_CORRECTION_DAMPENING * Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST);
-			SmartDashboard.putNumber("actualSpeedCorrection", speedCorrection);
-			speedCorrection = Math.min(Math.max(speedCorrection, -0.05), 0.05);
-			speedCorrection=0;
-			
-			// If left dist greater than right, slow down left and speed up right
+			double speedCorrection = TURN_CORRECTION_FACTOR * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
+			speedCorrection = Math.min(Math.max(speedCorrection, -startingSpeed), startingSpeed);
+			speedCorrection = 0;
 			lMotor.set(Math.max(speed-speedCorrection, 0));
 			rMotor.set(Math.min(-(speed+speedCorrection), 0));
+			
+			if(degrees-degreesTurned < TURN_DAMPENING_THRESHOLD) speed = Math.max(Math.min(0.1, startingSpeed), ((degrees-degreesTurned)/TURN_DAMPENING_THRESHOLD)*startingSpeed);
 			
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
 			SmartDashboard.putNumber("degreesTurned", degreesTurned);

@@ -59,7 +59,6 @@ public class Robot extends IterativeRobot {
 		train.rEncoder.reset();
 		
 		//train.driveFoward(.4, Math.PI*40*6);
-		train.turn(.2, 360);
 	}
 
 	

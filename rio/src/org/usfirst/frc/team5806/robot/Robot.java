@@ -3,9 +3,12 @@ package org.usfirst.frc.team5806.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 public class Robot extends IterativeRobot {
 	DriveTrain train;
 	Joystick stick;
+	//NetworkTable table;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -26,6 +30,9 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		train = new DriveTrain();
 		stick = new Joystick(0);
+		
+		//NetworkTable.setServerMode();
+		//table = NetworkTable.getTable("test");
 	}
 
 	/**
@@ -48,15 +55,19 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		//train.driveFoward(.11, Math.PI*6);
-		train.turn(.2, 90);
+		train.lEncoder.reset();
+		train.rEncoder.reset();
+		
+		//train.driveFoward(.4, Math.PI*40*6);
+		train.turn(.2, 360);
 	}
 
 	
 	@Override
 	public void teleopPeriodic() {
-		train.setSpeeds(stick.getRawAxis(1), stick.getRawAxis(5));
-		train.updateDashboard();
+		//SmartDashboard.putNumber("randomvalue", table.getNumber("randomvalue", 1));
+		//train.setSpeeds(-stick.getRawAxis(1)*0.4, -stick.getRawAxis(5)*0.4);
+		//train.updateDashboard();
 	}
 
 	/**

@@ -10,25 +10,33 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain {
 	static final double MAX_SPEED = 0.5;
 	static final double MIN_SPEED = 0.1;
-	static final double LEFT_ENCODER_TO_DIST = 6*Math.PI / 356.0;
-	static final double RIGHT_ENCODER_TO_DIST = 6*Math.PI / 236.0;
+	static final double ONE_ROTATION = 6*Math.PI;
+	static final double LEFT_ENCODER_TO_DIST = 6*Math.PI / 355.0;
+	static final double RIGHT_ENCODER_TO_DIST = 6*Math.PI / 359.0;
 	static final double TURN_CORRECTION_DAMPENING = 1/10.0;
-	static final double SPEED_CORRECTION_DAMPENING = 0.5;
+	static final double SPEED_CORRECTION_DAMPENING = 0.1;
 	
 	Encoder lEncoder;
 	Encoder rEncoder;
-	Victor lMotor = new Victor(9);
-	Victor rMotor = new Victor(8);
+	Victor lMotor;
+	Victor rMotor;
 
-	AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	AHRS ahrs;
 
 	public DriveTrain() {
 		lEncoder = new Encoder(4, 5);
 		rEncoder = new Encoder(2, 3);
+		lMotor = new Victor(9);
+		rMotor = new Victor(8);
+		ahrs = new AHRS(SPI.Port.kMXP);
 
-		lMotor.setInverted(true);
+		rMotor.setInverted(true);
+		ahrs.reset();
+		lEncoder.reset();
+		rEncoder.reset();
 	}
 	
+	// Don't try negative speed for now
 	public void driveFoward(double speed, double distance) {
 		lEncoder.reset();
 		rEncoder.reset();
@@ -36,24 +44,30 @@ public class DriveTrain {
 		rMotor.set(speed);
 		
 		double startingAngle = ahrs.getAngle();
+		double startingSpeed = speed;
 		double distanceTraveled;
 		do {
 			distanceTraveled = ((Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)+Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST)) / 2.0);
 			
-			double speedCorrection = TURN_CORRECTION_DAMPENING * (ahrs.getAngle() - startingAngle);
+			double speedCorrection = SPEED_CORRECTION_DAMPENING * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
+			speedCorrection = Math.min(Math.max(speedCorrection, -startingSpeed), startingSpeed);
 			lMotor.set(speed-speedCorrection);
 			rMotor.set(speed+speedCorrection);
 			
 			SmartDashboard.putNumber("angleDif", ahrs.getAngle() - startingAngle);
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
 			SmartDashboard.putNumber("distanceTraveled", distanceTraveled);
+			if(distance-distanceTraveled < ONE_ROTATION/2.0) speed = Math.max(Math.min(0.10, startingSpeed), ((distance-distanceTraveled)/(ONE_ROTATION/2.0))*startingSpeed);
 			updateDashboard();
 		} while(distanceTraveled < distance);
+		lMotor.set(0);
+		rMotor.set(0);
 	}
 	
 	/**
 	 * Set speed to negative to turn the opposite direction.
 	 */
+	// Don't try negative speed for now
 	public void turn(double speed, double degrees) {
 		lEncoder.reset();
 		rEncoder.reset();
@@ -65,11 +79,16 @@ public class DriveTrain {
 			
 			// Pos if left dist greater than right
 			double speedCorrection = SPEED_CORRECTION_DAMPENING * Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST);
+			SmartDashboard.putNumber("actualSpeedCorrection", speedCorrection);
+			speedCorrection = Math.min(Math.max(speedCorrection, -0.05), 0.05);
+			speedCorrection=0;
+			
 			// If left dist greater than right, slow down left and speed up right
 			lMotor.set(Math.max(speed-speedCorrection, 0));
 			rMotor.set(Math.min(-(speed+speedCorrection), 0));
 			
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
+			SmartDashboard.putNumber("degreesTurned", degreesTurned);
 			updateDashboard();
 		} while(degreesTurned < degrees);
 		lMotor.set(0);

@@ -113,7 +113,10 @@ public class CameraClient {
         while (true) {
             try {  
                 camFrame = driveStation.readImage();
-                if (camFrame == null) break;
+                System.out.println("Dropped Frame")
+                if (camFrame == null){
+                    continue;
+                }
                 window.updateImage(camFrame);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -69,8 +69,6 @@ public class CameraClient {
             int s = 0;
             while ((s = in.read(buffer, 0, 10000)) != -1) {
                 if ((char)buffer[s-1] == 'e'){
-                    System.out.println("GOTEEEEMM");
-                    System.out.println(s-1);
                     bs.write(buffer, 0, s-1);
                     break;
                 } else {
@@ -98,26 +96,36 @@ public class CameraClient {
         return img;
     }
     public static void main(String[] args) {
-        CameraClient driveStation = new CameraClient("172.17.126.16", 5441);
-        driveStation.initSocket();
+        CameraClient cam1 = new CameraClient("172.17.125.191", 5440);
+        CameraClient cam2 = new CameraClient("172.17.125.191", 5441);
+        cam1.initSocket();
+        cam2.initSocket();
         
-        BufferedImage camFrame = null;
-        DisplayImage window = null;
+        BufferedImage camFrame1 = null;
+        BufferedImage camFrame2 = null;
+        
+        DisplayImage window1 = null;
+        DisplayImage window2 = null;
+        
         try {
-            camFrame = driveStation.readImage();
-            window = new DisplayImage(camFrame);
+            camFrame1 = cam1.readImage();
+            camFrame2 = cam2.readImage();
+            window1 = new DisplayImage(camFrame1);
+            window2 = new DisplayImage(camFrame2);
         } catch (Exception e) {
             e.printStackTrace();
         }
         
         while (true) {
-            try {  
-                camFrame = driveStation.readImage();
-                System.out.println("Dropped Frame")
-                if (camFrame == null){
+            try {
+                camFrame1 = cam1.readImage();
+                camFrame2 = cam2.readImage();
+                if (camFrame1 == null || camFrame2 == null) {
+                    System.out.println("Dropped Frame");
                     continue;
                 }
-                window.updateImage(camFrame);
+                window1.updateImage(camFrame1);
+                window2.updateImage(camFrame2);
             } catch (Exception e) {
                 e.printStackTrace();
             }

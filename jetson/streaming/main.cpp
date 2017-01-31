@@ -10,9 +10,9 @@
 #include <unistd.h>
 #include "Socket.hpp"
 
-#define QUALITY 5
-#define PORT1 5440
-#define PORT2 5441
+#define QUALITY 50
+#define PORT1 5808
+#define PORT2 5809
 #define ENDCHAR 'e'
 
 using namespace cv;
@@ -30,25 +30,28 @@ int main(int argc, char** argv) {
     p.push_back(CV_IMWRITE_JPEG_QUALITY);
     p.push_back(QUALITY);
 
-    unsigned int usecs = 1000;
+    unsigned int usecs = 0;//1000;
 
     if(!cam0.open(0))
         return 0;
     if(!cam1.open(1))
         return 0;
     while (true) {
-        Mat frame0, frame1;
+        Mat frame0, frame1, frame0comp, frame1comp;
         Mat compressedMat;
         cam0 >> frame0;
         cam1 >> frame1;
         if(frame0.empty()) break; // end of video stream
         if(frame1.empty()) break; // end of video stream
 
+        resize(frame0, frame0comp, Size(0,0), 0.5, 0.5);
+        resize(frame1, frame1comp, Size(0,0), 0.5, 0.5);
+
         buff0.clear();
         buff1.clear();
 
-        imencode(".jpg", frame0, buff0, p);
-        imencode(".jpg", frame1, buff1, p);
+        imencode(".jpg", frame0comp, buff0, p);
+        imencode(".jpg", frame1comp, buff1, p);
 
         unsigned char data0[buff0.size()+1];
         unsigned char data1[buff1.size()+1];

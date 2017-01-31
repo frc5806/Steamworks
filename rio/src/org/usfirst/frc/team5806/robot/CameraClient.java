@@ -83,8 +83,8 @@ public class CameraClient {
         return bs.toByteArray();
     }
     public static void main(String[] args) {
-        CameraClient cam1 = new CameraClient("172.17.125.191", 5806);
-        CameraClient cam2 = new CameraClient("172.17.125.191", 5807);
+        CameraClient cam1 = new CameraClient("172.17.126.199", 5808);
+        CameraClient cam2 = new CameraClient("172.17.126.199", 5809);
         cam1.initSocket();
         cam2.initSocket();
         
@@ -103,16 +103,24 @@ public class CameraClient {
             e.printStackTrace();
         }
         
+        int fps = 0;
+        long time0 = System.currentTimeMillis();
+        
         while (true) {
             try {
                 camFrame1 = cam1.readImage();
                 camFrame2 = cam2.readImage();
                 if (camFrame1 == null || camFrame2 == null) {
-                    System.out.println("Dropped Frame");
                     continue;
                 }
                 window1.updateImage(camFrame1);
                 window2.updateImage(camFrame2);
+                fps++;
+                if (System.currentTimeMillis() - time0 >= 1000) {
+                    System.out.println(fps + " Frames in Last Second");
+                    fps = 0;
+                    time0 = System.currentTimeMillis();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -133,7 +141,6 @@ public class CameraClient {
         }
         public void updateImage(byte[] img) {
             lbl.setIcon(new ImageIcon(img));
-            System.out.println("Updating Image");
         }
     }
 }

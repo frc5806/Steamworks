@@ -2,7 +2,6 @@ import java.net.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
-import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -61,7 +60,7 @@ public class CameraClient {
         }
         return s;
     }
-    private byte[] readSocketBytes() {
+    private byte[] readImage() {
         ByteArrayOutputStream bs = null;
         try {   
             bs = new ByteArrayOutputStream();
@@ -83,26 +82,14 @@ public class CameraClient {
         }
         return bs.toByteArray();
     }
-    public BufferedImage readImage() {
-        BufferedImage img = null;
-        try {
-            byte[] bytes = readSocketBytes();
-            if (bytes == null) return null;
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            img = ImageIO.read(bais);
-        } catch (Exception e) {
-            System.out.println("Error creating image from bytes.");
-        }
-        return img;
-    }
     public static void main(String[] args) {
-        CameraClient cam1 = new CameraClient("172.17.125.191", 5440);
-        CameraClient cam2 = new CameraClient("172.17.125.191", 5441);
+        CameraClient cam1 = new CameraClient("172.17.125.191", 5806);
+        CameraClient cam2 = new CameraClient("172.17.125.191", 5807);
         cam1.initSocket();
         cam2.initSocket();
         
-        BufferedImage camFrame1 = null;
-        BufferedImage camFrame2 = null;
+        byte[] camFrame1 = null;
+        byte[] camFrame2 = null;
         
         DisplayImage window1 = null;
         DisplayImage window2 = null;
@@ -133,18 +120,18 @@ public class CameraClient {
     }
     private static class DisplayImage {
         private JLabel lbl;
-        public DisplayImage(BufferedImage img) throws IOException {
+        public DisplayImage(byte[] img) throws IOException {
             ImageIcon icon = new ImageIcon(img);
             JFrame frame = new JFrame();
             lbl = new JLabel();
             lbl.setIcon(icon);
-            frame.setSize(200,300);
+            frame.setSize(100,100);
             frame.add(lbl);
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
         }
-        public void updateImage(BufferedImage img) {
+        public void updateImage(byte[] img) {
             lbl.setIcon(new ImageIcon(img));
             System.out.println("Updating Image");
         }

@@ -25,8 +25,8 @@ public class DriveTrain {
 	AHRS ahrs;
 
 	public DriveTrain() {
-		lEncoder = new Encoder(4, 5);
-		rEncoder = new Encoder(2, 3);
+		lEncoder = new Encoder(2, 3);
+		rEncoder = new Encoder(4, 5);
 		lMotor = new Victor(9);
 		rMotor = new Victor(8);
 		ahrs = new AHRS(SPI.Port.kMXP);

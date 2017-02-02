@@ -83,6 +83,10 @@ public class CameraClient {
         return bs.toByteArray();
     }
     public static void main(String[] args) {
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int[] topLeft1 = {0,0};
+        int[] topLeft2 = {(int)(screen.width / 2.0), 0};
+        int[] dims = {(int)(screen.width / 2.0), (int)(screen.height / 2.0)};
         CameraClient cam1 = new CameraClient("172.17.126.199", 5808);
         CameraClient cam2 = new CameraClient("172.17.126.199", 5809);
         cam1.initSocket();
@@ -97,8 +101,8 @@ public class CameraClient {
         try {
             camFrame1 = cam1.readImage();
             camFrame2 = cam2.readImage();
-            window1 = new DisplayImage(camFrame1);
-            window2 = new DisplayImage(camFrame2);
+            window1 = new DisplayImage(camFrame1, topLeft1, dims);
+            window2 = new DisplayImage(camFrame2, topLeft2, dims);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,12 +132,13 @@ public class CameraClient {
     }
     private static class DisplayImage {
         private JLabel lbl;
-        public DisplayImage(byte[] img) throws IOException {
+        public DisplayImage(byte[] img, int[] topLeft, int[] dims) throws IOException {
             ImageIcon icon = new ImageIcon(img);
             JFrame frame = new JFrame();
             lbl = new JLabel();
             lbl.setIcon(icon);
-            frame.setSize(100,100);
+            frame.setSize(dims[0], dims[1]);
+            frame.setLocation(topLeft[0], topLeft[1]);
             frame.add(lbl);
             frame.setVisible(true);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

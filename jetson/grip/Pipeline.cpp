@@ -22,9 +22,9 @@ void Pipeline::Process(){
 	//Step HSV_Threshold0:
 	//input
 	Mat hsvThresholdInput = resizeImageOutput;
-	double hsvThresholdHue[] = {41.62385249309404, 92.23793941146276};
+	double hsvThresholdHue[] = {150, 255};
 	double hsvThresholdSaturation[] = {0.0, 255.0};
-	double hsvThresholdValue[] = {222.76464527030643, 255.0};
+	double hsvThresholdValue[] = {100, 255.0};
 	hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, this->hsvThresholdOutput);
 	//Step Find_Contours0:
 	//input

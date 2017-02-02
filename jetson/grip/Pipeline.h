@@ -25,7 +25,6 @@ class Pipeline {
 		Mat source0;
 		Mat resizeImageOutput;
 		Mat hsvThresholdOutput;
-		vector<vector<Point> > findContoursOutput;
 		void resizeImage(Mat &, double , double , int , Mat &);
 		void hsvThreshold(Mat &, double [], double [], double [], Mat &);
 		void findContours(Mat &, bool , vector<vector<Point> > &);
@@ -33,6 +32,7 @@ class Pipeline {
 
 	public:
 		vector<vector<Point> > filterContoursOutput;
+        vector<vector<Point> > findContoursOutput;
 		Pipeline();
 		void Process();
 		void setsource0(Mat &source0);

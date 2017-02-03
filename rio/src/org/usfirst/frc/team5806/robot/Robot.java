@@ -1,5 +1,7 @@
 package org.usfirst.frc.team5806.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -21,6 +23,9 @@ public class Robot extends IterativeRobot {
 	DriveTrain train;
 	Joystick stick;
 	NetworkTable table;
+	
+	AnalogInput leftDistance;
+	DigitalOutput triggerDistance;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -31,10 +36,25 @@ public class Robot extends IterativeRobot {
 		train = new DriveTrain();
 		stick = new Joystick(0);
 		
+		leftDistance = new AnalogInput(0);
+		triggerDistance = new DigitalOutput(9);
+		
 		NetworkTable.setServerMode();
 		table = NetworkTable.getTable("test");
 	}
-
+	public double getDistance(){
+		
+		triggerDistance.set(true);
+		try {
+			Thread.sleep(5);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		triggerDistance.set(false);
+		return leftDistance.getVoltage()/1024;
+		
+	}
 	/**
 	 * This function is run once each time the robot enters autonomous mode
 	 */
@@ -68,8 +88,10 @@ public class Robot extends IterativeRobot {
 		//table.putNumber("randomvalue", 2);
 		//SmartDashboard.putNumber("randomvalue", table.getNumber("randomvalue", 1));
 
-		train.setSpeeds(-stick.getRawAxis(1)*0.4, -stick.getRawAxis(5)*0.4);
-		train.updateDashboard();
+		//train.setSpeeds(-stick.getRawAxis(1)*0.4, -stick.getRawAxis(5)*0.4);
+		//train.getDistance();
+		//train.updateDashboard();
+		SmartDashboard.putNumber("LeftDistance", getDistance());
 	}
 
 	/**

@@ -1,7 +1,9 @@
 package org.usfirst.frc.team5806.robot;
 
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Victor;
@@ -21,18 +23,17 @@ public class DriveTrain {
 	Encoder rEncoder;
 	Victor lMotor;
 	Victor rMotor;
-
-	AHRS ahrs;
+	//AHRS ahrs;
 
 	public DriveTrain() {
 		lEncoder = new Encoder(2, 3);
 		rEncoder = new Encoder(4, 5);
 		lMotor = new Victor(9);
 		rMotor = new Victor(8);
-		ahrs = new AHRS(SPI.Port.kMXP);
+		//ahrs = new AHRS(SPI.Port.kMXP);
 
 		rMotor.setInverted(true);
-		ahrs.reset();
+		//ahrs.reset();
 		lEncoder.reset();
 		rEncoder.reset();
 	}
@@ -44,7 +45,7 @@ public class DriveTrain {
 		lMotor.set(speed);
 		rMotor.set(speed);
 		
-		double startingAngle = ahrs.getAngle();
+		//double startingAngle = ahrs.getAngle();
 		double startingSpeed = speed;
 		double distanceTraveled;
 		do {
@@ -72,11 +73,11 @@ public class DriveTrain {
 		lEncoder.reset();
 		rEncoder.reset();
 		
-		double startingAngle = ahrs.getAngle();
+		//double startingAngle = ahrs.getAngle();
 		double startingSpeed = speed;
 		double degreesTurned;
-		do { 
-			degreesTurned = Math.abs(ahrs.getAngle() - startingAngle);
+	//	do { 
+		//	degreesTurned = Math.abs(ahrs.getAngle() - startingAngle);
 			
 			double speedCorrection = TURN_CORRECTION_FACTOR * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
 			speedCorrection = Math.min(Math.max(speedCorrection, -startingSpeed), startingSpeed);
@@ -84,12 +85,12 @@ public class DriveTrain {
 			lMotor.set(Math.max(speed-speedCorrection, 0));
 			rMotor.set(Math.min(-(speed+speedCorrection), 0));
 			
-			if(degrees-degreesTurned < TURN_DAMPENING_THRESHOLD) speed = Math.max(Math.min(0.1, startingSpeed), ((degrees-degreesTurned)/TURN_DAMPENING_THRESHOLD)*startingSpeed);
+		//	if(degrees-degreesTurned < TURN_DAMPENING_THRESHOLD) speed = Math.max(Math.min(0.1, startingSpeed), ((degrees-degreesTurned)/TURN_DAMPENING_THRESHOLD)*startingSpeed);
 			
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
-			SmartDashboard.putNumber("degreesTurned", degreesTurned);
+		//	SmartDashboard.putNumber("degreesTurned", degreesTurned);
 			updateDashboard();
-		} while(degreesTurned < degrees);
+	//	} while(degreesTurned < degrees);
 		lMotor.set(0);
 		rMotor.set(0);
 	}
@@ -105,7 +106,7 @@ public class DriveTrain {
 	}
 	
 	public void updateDashboard() {
-		SmartDashboard.putNumber("angle", ahrs.getAngle());
+	//	SmartDashboard.putNumber("angle", ahrs.getAngle());
 		SmartDashboard.putNumber("lEncoder", lEncoder.get());
 		SmartDashboard.putNumber("rEncoder", rEncoder.get());
 		SmartDashboard.putNumber("lEncoderDist", lEncoder.get()*LEFT_ENCODER_TO_DIST);

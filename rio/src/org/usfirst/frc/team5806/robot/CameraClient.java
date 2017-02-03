@@ -1,3 +1,5 @@
+package org.usfirst.frc.team5806.robot;
+
 import java.net.*;
 import java.io.*;
 import java.awt.*;

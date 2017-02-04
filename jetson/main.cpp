@@ -30,20 +30,15 @@ void testVision() {
     pipe.setsource0(cont);
     pipe.Process();
 
-    cvtColor(cont, cont, COLOR_BGR2GRAY);
-
     vector<Vec4i> hierarchy;
-    vector<vector<Point> > contours = pipe.findContoursOutput;
 
-    std::cout << contours.size() << "\n";
-
-    for( int i = 0; i< contours.size(); i++ )
+    for( int i = 0; i< pipe.findContoursOutput.size(); i++ )
     {
         Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-        //drawContours(pipe.hsvThresholdOutput, contours, i, color, 2, 8, hierarchy, 0, Point());
+        drawContours(pipe.resizeImageOutput, pipe.findContoursOutput, i, color, 2, 8, hierarchy, 0, Point());
     }
 
-    imshow("Video", pipe.hsvThresholdOutput);
+    imshow("Video", pipe.resizeImageOutput);
     waitKey(0);
 }
 

@@ -20,9 +20,9 @@ void GearPipeline::Process(){
     //Step HSV_Threshold0:
     //input
     Mat hsvThresholdInput = resizeImageOutput;
-    double hsvThresholdHue[] = {5, 179};
-    double hsvThresholdSaturation[] = {0, 255};
-    double hsvThresholdValue[] = {150, 255.0};
+    double hsvThresholdHue[] = {5, 93};
+    double hsvThresholdSaturation[] = {188, 255};
+    double hsvThresholdValue[] = {45, 255};
     hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, this->hsvThresholdOutput);
     //Step Find_Contours0:
     //input

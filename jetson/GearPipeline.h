@@ -2,9 +2,9 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/features2d.hpp>
 #include <opencv2/core/mat.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,24 +21,24 @@ using namespace std;
 * Make sure to set sources before running process()
 */
 class GearPipeline {
-	private:
-		Mat source0;
-		Mat resizeImageOutput;
-		Mat hsvThresholdOutput;
-		vector<vector<Point> > findContoursOutput;
-		void resizeImage(Mat &, double , double , int , Mat &);
-		void hsvThreshold(Mat &, double [], double [], double [], Mat &);
-		void findContours(Mat &, bool , vector<vector<Point> > &);
-		void filterContours(vector<vector<Point> > &, double , double , double , double , double , double , double [], double , double , double , double , vector<vector<Point> > &);
+    private:
+        Mat source0;
+        Mat resizeImageOutput;
+        Mat hsvThresholdOutput;
+        void resizeImage(Mat &, double , double , int , Mat &);
+        void hsvThreshold(Mat &, double [], double [], double [], Mat &);
+        void findContours(Mat &, bool , vector<vector<Point> > &);
+        void filterContours(vector<vector<Point> > &, double , double , double , double , double , double , double [], double , double , double , double , vector<vector<Point> > &);
 
-	public:
-		vector<vector<Point> > filterContoursOutput;
-		GearPipeline();
-		void Process();
-		void setsource0(Mat &source0);
-		Mat* getresizeImageOutput();
-		Mat* gethsvThresholdOutput();
-		vector<vector<Point> >* getfindContoursOutput();
-		vector<vector<Point> >* getfilterContoursOutput();
+    public:
+        vector<vector<Point> > filterContoursOutput;
+        vector<vector<Point> > findContoursOutput;
+        GearPipeline();
+        void Process();
+        void setsource0(Mat &source0);
+        Mat* getresizeImageOutput();
+        Mat* gethsvThresholdOutput();
+        vector<vector<Point> >* getfindContoursOutput();
+        vector<vector<Point> >* getfilterContoursOutput();
 };
 

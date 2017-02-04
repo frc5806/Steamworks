@@ -23,8 +23,6 @@ using namespace std;
 class GearPipeline {
     private:
         Mat source0;
-        Mat resizeImageOutput;
-        Mat hsvThresholdOutput;
         void resizeImage(Mat &, double , double , int , Mat &);
         void hsvThreshold(Mat &, double [], double [], double [], Mat &);
         void findContours(Mat &, bool , vector<vector<Point> > &);
@@ -33,6 +31,8 @@ class GearPipeline {
     public:
         vector<vector<Point> > filterContoursOutput;
         vector<vector<Point> > findContoursOutput;
+        Mat resizeImageOutput;
+        Mat hsvThresholdOutput;
         GearPipeline();
         void Process();
         void setsource0(Mat &source0);

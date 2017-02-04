@@ -40,10 +40,10 @@ void testVision() {
     for( int i = 0; i< contours.size(); i++ )
     {
         Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-        drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
+        //drawContours(pipe.hsvThresholdOutput, contours, i, color, 2, 8, hierarchy, 0, Point());
     }
 
-    imshow("Video", frame);
+    imshow("Video", pipe.hsvThresholdOutput);
     waitKey(0);
 }
 

@@ -20,13 +20,14 @@ void GearPipeline::Process(){
     //Step HSV_Threshold0:
     //input
     Mat hsvThresholdInput = resizeImageOutput;
-    double hsvThresholdHue[] = {41.62385249309404, 233.23793941146276};
-    double hsvThresholdSaturation[] = {0.0, 255.0};
-    double hsvThresholdValue[] = {222.76464527030643, 255.0};
+    double hsvThresholdHue[] = {5, 179};
+    double hsvThresholdSaturation[] = {0, 255};
+    double hsvThresholdValue[] = {150, 255.0};
     hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, this->hsvThresholdOutput);
     //Step Find_Contours0:
     //input
-    Mat findContoursInput = hsvThresholdOutput;
+    Mat findContoursInput;
+    hsvThresholdOutput.copyTo(findContoursInput);
     bool findContoursExternalOnly = false;
     findContours(findContoursInput, findContoursExternalOnly, this->findContoursOutput);
     //Step Filter_Contours0:

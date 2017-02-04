@@ -2,13 +2,16 @@
 #include <chrono>
 #include <cstdio>
 #include <thread>
-#include "Socket.hpp"
-#include "opencv2/opencv.hpp"
 
+#include <dirent.h>
+
+#include "opencv2/opencv.hpp"
 #include "ntcore/include/networktables/NetworkTable.h"
 #include "ntcore/include/ntcore.h"
 
+#include "Socket.hpp"
 #include "GearPipeline.h"
+#include "BoilerPipeline.h"
 
 using namespace std;
 using namespace cv;
@@ -19,27 +22,36 @@ using namespace cv;
 #define ENDCHAR 'e'
 
 void testVision() {
+    DIR *dpdf;
+    struct dirent *epdf;
+
     RNG rng(12345);
     GearPipeline pipe = GearPipeline();
-    VideoCapture stream1(0);
 
-    Mat frame, cont;
-    frame = imread("img/1ftH10ftD1Angle0Brightness.jpg", CV_LOAD_IMAGE_COLOR);
-    cont = frame.clone();
+    dpdf = opendir("img/gear");
+    if (dpdf != NULL){
+        while (epdf = readdir(dpdf)){
+            Mat frame, cont;
+            frame = imread(string("img/gear/") + string(epdf->d_name), CV_LOAD_IMAGE_COLOR);
+            cont = frame.clone();
 
-    pipe.setsource0(cont);
-    pipe.Process();
+            pipe.setsource0(cont);
+            pipe.Process();
 
-    vector<Vec4i> hierarchy;
+            vector<Vec4i> hierarchy;
 
-    for( int i = 0; i< pipe.findContoursOutput.size(); i++ )
-    {
-        Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-        drawContours(pipe.resizeImageOutput, pipe.findContoursOutput, i, color, 2, 8, hierarchy, 0, Point());
+            for( int i = 0; i< pipe.filterContoursOutput.size(); i++ )
+            {
+                Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+                drawContours(pipe.resizeImageOutput, pipe.filterContoursOutput, i, color, 2, 8, hierarchy, 0, Point());
+            }
+
+            imshow(epdf->d_name, pipe.resizeImageOutput);
+            waitKey(0);
+            destroyAllWindows();
+        }
     }
-
-    imshow("Video", pipe.resizeImageOutput);
-    waitKey(0);
+    closedir(dpdf);
 }
 
 #ifdef __arm__

@@ -1,15 +1,15 @@
-#include "GearPipeline.h"
+#include "BoilerPipeline.h"
 
 /**
-* Initializes a GearPipeline.
+* Initializes a BoilerPipeline.
 */
-GearPipeline::GearPipeline() {
+BoilerPipeline::BoilerPipeline() {
 }
 /**
-* Runs an iteration of the GearPipeline and updates outputs.  * * Sources need to be set before calling this method. 
+* Runs an iteration of the BoilerPipeline and updates outputs.  * * Sources need to be set before calling this method. 
 *
 */
-void GearPipeline::Process(){
+void BoilerPipeline::Process(){
     //Step Resize_Image0:
     //input
     Mat resizeImageInput = source0;
@@ -20,9 +20,9 @@ void GearPipeline::Process(){
     //Step HSV_Threshold0:
     //input
     Mat hsvThresholdInput = resizeImageOutput;
-    double hsvThresholdHue[] = {38, 93};
-    double hsvThresholdSaturation[] = {210, 255};
-    double hsvThresholdValue[] = {25, 255};
+    double hsvThresholdHue[] = {5, 93};
+    double hsvThresholdSaturation[] = {188, 255};
+    double hsvThresholdValue[] = {45, 255};
     hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, this->hsvThresholdOutput);
     //Step Find_Contours0:
     //input
@@ -33,17 +33,17 @@ void GearPipeline::Process(){
     //Step Filter_Contours0:
     //input
     vector<vector<Point> > filterContoursContours = findContoursOutput;
-    double filterContoursMinArea = 50.0;
+    double filterContoursMinArea = 25.0;
     double filterContoursMinPerimeter = 25.0;
-    double filterContoursMinWidth = 5.0;
+    double filterContoursMinWidth = 10.0;
     double filterContoursMaxWidth = 1000.0;
-    double filterContoursMinHeight = 10.0;
+    double filterContoursMinHeight = 0.0;
     double filterContoursMaxHeight = 1000.0;
-    double filterContoursSolidity[] = {60.927029314658625, 100.0};
-    double filterContoursMaxVertices = 1000.0;
+    double filterContoursSolidity[] = {51.927029314658625, 100.0};
+    double filterContoursMaxVertices = 200.0;
     double filterContoursMinVertices = 0.0;
-    double filterContoursMinRatio = 0.1;
-    double filterContoursMaxRatio = 10.0;
+    double filterContoursMinRatio = 0.0;
+    double filterContoursMaxRatio = 100.0;
     filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, this->filterContoursOutput);
 }
 
@@ -51,35 +51,35 @@ void GearPipeline::Process(){
  * This method is a generated setter for source0.
  * @param source the Mat to set
  */
-void GearPipeline::setsource0(Mat &source0){
+void BoilerPipeline::setsource0(Mat &source0){
     source0.copyTo(this->source0);
 }
 /**
  * This method is a generated getter for the output of a Resize_Image.
  * @return Mat output from Resize_Image.
  */
-Mat* GearPipeline::getresizeImageOutput(){
+Mat* BoilerPipeline::getresizeImageOutput(){
     return &(this->resizeImageOutput);
 }
 /**
  * This method is a generated getter for the output of a HSV_Threshold.
  * @return Mat output from HSV_Threshold.
  */
-Mat* GearPipeline::gethsvThresholdOutput(){
+Mat* BoilerPipeline::gethsvThresholdOutput(){
     return &(this->hsvThresholdOutput);
 }
 /**
  * This method is a generated getter for the output of a Find_Contours.
  * @return ContoursReport output from Find_Contours.
  */
-vector<vector<Point> >* GearPipeline::getfindContoursOutput(){
+vector<vector<Point> >* BoilerPipeline::getfindContoursOutput(){
     return &(this->findContoursOutput);
 }
 /**
  * This method is a generated getter for the output of a Filter_Contours.
  * @return ContoursReport output from Filter_Contours.
  */
-vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
+vector<vector<Point> >* BoilerPipeline::getfilterContoursOutput(){
     return &(this->filterContoursOutput);
 }
     /**
@@ -91,7 +91,7 @@ vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
      * @param interpolation The type of interpolation.
      * @param output The image in which to store the output.
      */
-    void GearPipeline::resizeImage(Mat &input, double width, double height, int interpolation, Mat &output) {
+    void BoilerPipeline::resizeImage(Mat &input, double width, double height, int interpolation, Mat &output) {
         resize(input, output, Size(width, height), 0.0, 0.0, interpolation);
     }
     /**
@@ -103,7 +103,7 @@ vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
      * @param val The min and max value.
      * @param output The image in which to store the output.
      */
-    void GearPipeline::hsvThreshold(Mat &input, double hue[], double sat[], double val[], Mat &out) {
+    void BoilerPipeline::hsvThreshold(Mat &input, double hue[], double sat[], double val[], Mat &out) {
         cvtColor(input, out, COLOR_BGR2HSV);
         inRange(out,Scalar(hue[0], sat[0], val[0]), Scalar(hue[1], sat[1], val[1]), out);
     }
@@ -114,7 +114,7 @@ vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
      * @param externalOnly if only external contours are to be found.
      * @param contours vector of contours to put contours in.
      */
-    void GearPipeline::findContours(Mat &input, bool externalOnly, vector<vector<Point> > &contours) {
+    void BoilerPipeline::findContours(Mat &input, bool externalOnly, vector<vector<Point> > &contours) {
         vector<Vec4i> hierarchy;
         contours.clear();
         int mode = externalOnly ? RETR_EXTERNAL : RETR_LIST;
@@ -138,7 +138,7 @@ vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
      * @param maxRatio maximum ratio of width to height.
      * @param output vector of filtered contours.
      */
-    void GearPipeline::filterContours(vector<vector<Point> > &inputContours, double minArea, double minPerimeter, double minWidth, double maxWidth, double minHeight, double maxHeight, double solidity[], double maxVertexCount, double minVertexCount, double minRatio, double maxRatio, vector<vector<Point> > &output) {
+    void BoilerPipeline::filterContours(vector<vector<Point> > &inputContours, double minArea, double minPerimeter, double minWidth, double maxWidth, double minHeight, double maxHeight, double solidity[], double maxVertexCount, double minVertexCount, double minRatio, double maxRatio, vector<vector<Point> > &output) {
         vector<Point> hull;
         output.clear();
         for (vector<Point> contour: inputContours) {
@@ -152,7 +152,7 @@ vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
             double solid = 100 * area / contourArea(hull);
             if (solid < solidity[0] || solid > solidity[1]) continue;
             if (contour.size() < minVertexCount || contour.size() > maxVertexCount) continue;
-            double ratio = bb.width / (float)bb.height;
+            double ratio = bb.width / bb.height;
             if (ratio < minRatio || ratio > maxRatio) continue;
             output.push_back(contour);
         }

@@ -33,18 +33,20 @@ void GearPipeline::Process(){
     //Step Filter_Contours0:
     //input
     vector<vector<Point> > filterContoursContours = findContoursOutput;
-    double filterContoursMinArea = 50.0;
-    double filterContoursMinPerimeter = 25.0;
-    double filterContoursMinWidth = 5.0;
+    double filterContoursMinArea = 20.0;
+    double filterContoursMinPerimeter = 10.0;
+    double filterContoursMinWidth = 0.0;
     double filterContoursMaxWidth = 1000.0;
-    double filterContoursMinHeight = 10.0;
+    double filterContoursMinHeight = 0.0;
     double filterContoursMaxHeight = 1000.0;
-    double filterContoursSolidity[] = {60.927029314658625, 100.0};
+    double filterContoursSolidity[] = {50.927029314658625, 100.0};
     double filterContoursMaxVertices = 1000.0;
     double filterContoursMinVertices = 0.0;
-    double filterContoursMinRatio = 0.1;
-    double filterContoursMaxRatio = 10.0;
-    filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, this->filterContoursOutput);
+    double filterContoursMinRatio = 0.3;
+    double filterContoursMaxRatio = 1.0;
+    double filterContoursMinRectangularity = 0.3;
+    double filterContoursMaxRectangularity = 1.0;
+    filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursMinRectangularity, filterContoursMaxRectangularity, this->filterContoursOutput);
 }
 
 /**
@@ -138,22 +140,31 @@ vector<vector<Point> >* GearPipeline::getfilterContoursOutput(){
      * @param maxRatio maximum ratio of width to height.
      * @param output vector of filtered contours.
      */
-    void GearPipeline::filterContours(vector<vector<Point> > &inputContours, double minArea, double minPerimeter, double minWidth, double maxWidth, double minHeight, double maxHeight, double solidity[], double maxVertexCount, double minVertexCount, double minRatio, double maxRatio, vector<vector<Point> > &output) {
+    void GearPipeline::filterContours(vector<vector<Point> > &inputContours, double minArea, double minPerimeter, double minWidth, double maxWidth, double minHeight, double maxHeight, double solidity[], double maxVertexCount, double minVertexCount, double minRatio, double maxRatio, double minRectangularity, double maxRectangularity, vector<vector<Point> > &output) {
         vector<Point> hull;
         output.clear();
+        std::cout << "img\n\n" << "\n";
         for (vector<Point> contour: inputContours) {
             Rect bb = boundingRect(contour);
+            //std::cout << "Width: " << bb.width << "\n"; std::cout.flush();
+            //std::cout << "Height: " << bb.height << "\n"; std::cout.flush();
             if (bb.width < minWidth || bb.width > maxWidth) continue;
             if (bb.height < minHeight || bb.height > maxHeight) continue;
             double area = contourArea(contour);
+            //std::cout << "Area: " << area << "\n"; std::cout.flush();
             if (area < minArea) continue;
             if (arcLength(contour, true) < minPerimeter) continue;
             convexHull(Mat(contour, true), hull);
             double solid = 100 * area / contourArea(hull);
+            std::cout << "Solid: " << solid << "\n"; std::cout.flush();
             if (solid < solidity[0] || solid > solidity[1]) continue;
             if (contour.size() < minVertexCount || contour.size() > maxVertexCount) continue;
             double ratio = bb.width / (float)bb.height;
+            std::cout << "Ratio: " << ratio << "\n"; std::cout.flush();
             if (ratio < minRatio || ratio > maxRatio) continue;
+            double rectanglarity = area / (bb.width*bb.height);
+            std::cout << "Rectangularity: " << rectanglarity << "\n"; std::cout.flush();
+            if (rectanglarity < minRectangularity || rectanglarity > maxRectangularity) continue;
             output.push_back(contour);
         }
     }

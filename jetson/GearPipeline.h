@@ -26,7 +26,7 @@ class GearPipeline {
         void resizeImage(Mat &, double , double , int , Mat &);
         void hsvThreshold(Mat &, double [], double [], double [], Mat &);
         void findContours(Mat &, bool , vector<vector<Point> > &);
-        void filterContours(vector<vector<Point> > &, double , double , double , double , double , double , double [], double , double , double , double , vector<vector<Point> > &);
+        void filterContours(vector<vector<Point> > &, double , double , double , double , double , double , double [], double , double , double , double , double , double , vector<vector<Point> > &);
 
     public:
         vector<vector<Point> > filterContoursOutput;

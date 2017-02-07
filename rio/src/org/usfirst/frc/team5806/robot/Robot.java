@@ -20,85 +20,85 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	DriveTrain train;
-	Joystick stick;
-	NetworkTable table;
-	
-	AnalogInput leftDistance;
-	DigitalOutput triggerDistance;
+    DriveTrain train;
+    Joystick stick;
+    NetworkTable table;
+    
+    AnalogInput leftDistance;
+    DigitalOutput triggerDistance;
 
-	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
-	@Override
-	public void robotInit() {
-		train = new DriveTrain();
-		stick = new Joystick(0);
-		
-		leftDistance = new AnalogInput(0);
-		triggerDistance = new DigitalOutput(9);
-		
-		NetworkTable.setServerMode();
-		table = NetworkTable.getTable("test");
-	}
-	public double getDistance(){
-		
-		triggerDistance.set(true);
-		try {
-			Thread.sleep(5);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		triggerDistance.set(false);
-		return leftDistance.getVoltage()/1024;
-		
-	}
-	/**
-	 * This function is run once each time the robot enters autonomous mode
-	 */
-	@Override
-	public void autonomousInit() {
-	}
+    /**
+     * This function is run when the robot is first started up and should be
+     * used for any initialization code.
+     */
+    @Override
+    public void robotInit() {
+        train = new DriveTrain();
+        stick = new Joystick(0);
+        
+        leftDistance = new AnalogInput(0);
+        triggerDistance = new DigitalOutput(9);
+        
+        NetworkTable.setServerMode();
+        table = NetworkTable.getTable("test");
+    }
+    public double getDistance(){
+        
+        triggerDistance.set(true);
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        triggerDistance.set(false);
+        return leftDistance.getVoltage()/1024;
+        
+    }
+    /**
+     * This function is run once each time the robot enters autonomous mode
+     */
+    @Override
+    public void autonomousInit() {
+    }
 
-	/**
-	 * This function is called periodically during autonomous
-	 */
-	@Override
-	public void autonomousPeriodic() {
-	}
+    /**
+     * This function is called periodically during autonomous
+     */
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-	/**
-	 * This function is called once each time the robot enters tele-operated
-	 * mode
-	 */
-	@Override
-	public void teleopInit() {
-		train.lEncoder.reset();
-		train.rEncoder.reset();
-		
-		//train.driveFoward(.3, Math.PI*3*6);
-		//train.turn(.3, 360);
-	}
+    /**
+     * This function is called once each time the robot enters tele-operated
+     * mode
+     */
+    @Override
+    public void teleopInit() {
+        train.lEncoder.reset();
+        train.rEncoder.reset();
+        
+        //train.driveFoward(.3, Math.PI*3*6);
+        //train.turn(.3, 360);
+    }
 
-	
-	@Override
-	public void teleopPeriodic() {
-		//table.putNumber("randomvalue", 2);
-		//SmartDashboard.putNumber("randomvalue", table.getNumber("randomvalue", 1));
+    
+    @Override
+    public void teleopPeriodic() {
+        //table.putNumber("randomvalue", 2);
+        //SmartDashboard.putNumber("randomvalue", table.getNumber("randomvalue", 1));
 
-		//train.setSpeeds(-stick.getRawAxis(1)*0.4, -stick.getRawAxis(5)*0.4);
-		//train.getDistance();
-		//train.updateDashboard();
-		SmartDashboard.putNumber("LeftDistance", getDistance());
-	}
+        //train.setSpeeds(-stick.getRawAxis(1)*0.4, -stick.getRawAxis(5)*0.4);
+        //train.getDistance();
+        //train.updateDashboard();
+        SmartDashboard.putNumber("LeftDistance", getDistance());
+    }
 
-	/**
-	 * This function is called periodically during test mode
-	 */
-	@Override
-	public void testPeriodic() {
-		LiveWindow.run();
-	}
+    /**
+     * This function is called periodically during test mode
+     */
+    @Override
+    public void testPeriodic() {
+        LiveWindow.run();
+    }
 }

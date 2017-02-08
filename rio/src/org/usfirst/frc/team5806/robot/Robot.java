@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -24,15 +25,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	static final int trigPin = 6, echoPin = 5;
+	
 	DriveTrain train;
 	Joystick stick;
-	
-	AnalogInput leftDistance;
-	AnalogInput rightDistance;
 	
 	Counter gearEncoder;
 	Victor spinnyMotor;
 	NeoMagic neoMagic;
+	Ultrasonic sonar;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -47,12 +48,9 @@ public class Robot extends IterativeRobot {
 		//rightDistance = new AnalogInput(1);
 		neoMagic = new NeoMagic();
 		spinnyMotor = new Victor(2);
+		sonar = new Ultrasonic(trigPin, echoPin);
 	}
 	
-	public double[] getDistance(){
-		//triggerDistance.set(false);
-		return new double[]{leftDistance.getVoltage()/0.0049, rightDistance.getVoltage()*1024};	
-	}
 	/**
 	 * This function is run once each time the robot enters autonomous mode
 	 */
@@ -88,6 +86,7 @@ public class Robot extends IterativeRobot {
 		//gearEncoder.reset();
 		
 		neoMagic.setAll(new NeoMagic.Pixel(0, 255, 0));
+		sonar.setAutomaticMode(true);
 	}
 
 	
@@ -99,7 +98,7 @@ public class Robot extends IterativeRobot {
 		//train.updateDashboard();
 		//spinnyMotor.set(-stick.getRawAxis(1)*0.4);
 		//SmartDashboard.putNumber("touchlessInch", enc.get() / 20.0);
-		//SmartDashboard.putNumber("LeftDistance", getDistance()[0]);
+		//SmartDashboard.putNumber("Distance (in): ", sonar.getRangeInches());
 	}
 
 	/**

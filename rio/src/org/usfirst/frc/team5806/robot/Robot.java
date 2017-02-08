@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	static final int trigPin = 6, echoPin = 5;
+	static final int trigPin = 9, echoPin = 8;
 	
 	DriveTrain train;
 	Joystick stick;
@@ -72,7 +72,7 @@ public class Robot extends IterativeRobot {
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
-		gearEncoder.reset();
+		//gearEncoder.reset();
 		
 		//train.turn(0.5, 89.75, 40);
 		//train.turn(0.5, 89.75, 40);
@@ -90,15 +90,15 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		spinnyMotor.set(stick.getRawAxis(1));
-		SmartDashboard.putNumber("touchless", gearEncoder.get());
+		//spinnyMotor.set(stick.getRawAxis(1));
+		//SmartDashboard.putNumber("touchless", gearEncoder.get());
 		//train.setSpeeds(1, 1);
 		//train.setSpeeds(-stick.getRawAxis(1)*0.5, -stick.getRawAxis(5)*0.5);
 		//train.getDistance();
 		//train.updateDashboard();
 		//spinnyMotor.set(-stick.getRawAxis(1)*0.4);
 		//SmartDashboard.putNumber("touchlessInch", enc.get() / 20.0);
-		//SmartDashboard.putNumber("Distance (in): ", sonar.getRangeInches());
+		SmartDashboard.putNumber("Distance (in): ", sonar.getRangeInches());
 	}
 
 	/**

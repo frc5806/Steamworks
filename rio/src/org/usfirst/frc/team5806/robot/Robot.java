@@ -43,10 +43,8 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		train = new DriveTrain();
 		stick = new Joystick(0);
-		//gearEncoder = new Counter(new DigitalInput(0));
-		//leftDistance = new AnalogInput(0);
-		//rightDistance = new AnalogInput(1);
 		neoMagic = new NeoMagic();
+		
 		spinnyMotor = new Victor(2);
 		sonar = new Ultrasonic(trigPin, echoPin);
 	}
@@ -74,6 +72,7 @@ public class Robot extends IterativeRobot {
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
+		gearEncoder.reset();
 		
 		//train.turn(0.5, 89.75, 40);
 		//train.turn(0.5, 89.75, 40);
@@ -85,13 +84,14 @@ public class Robot extends IterativeRobot {
 
 		//gearEncoder.reset();
 		
-		neoMagic.setAll(new NeoMagic.Pixel(0, 255, 0));
 		sonar.setAutomaticMode(true);
 	}
 
 	
 	@Override
 	public void teleopPeriodic() {
+		spinnyMotor.set(stick.getRawAxis(1));
+		SmartDashboard.putNumber("touchless", gearEncoder.get());
 		//train.setSpeeds(1, 1);
 		//train.setSpeeds(-stick.getRawAxis(1)*0.5, -stick.getRawAxis(5)*0.5);
 		//train.getDistance();

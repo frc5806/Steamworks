@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -23,9 +24,10 @@ public class Robot extends IterativeRobot {
     DriveTrain train;
     Joystick stick;
     NetworkTable table;
+    Ultrasonic sonar;
     
-    AnalogInput leftDistance;
-    DigitalOutput triggerDistance;
+    static final int echoPin = 5, trigPin = 6;
+   
 
     /**
      * This function is run when the robot is first started up and should be
@@ -36,24 +38,10 @@ public class Robot extends IterativeRobot {
         train = new DriveTrain();
         stick = new Joystick(0);
         
-        leftDistance = new AnalogInput(0);
-        triggerDistance = new DigitalOutput(9);
+        sonar = new Ultrasonic(trigPin, echoPin);
         
         NetworkTable.setServerMode();
         table = NetworkTable.getTable("test");
-    }
-    public double getDistance(){
-        
-        triggerDistance.set(true);
-        try {
-            Thread.sleep(5);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        triggerDistance.set(false);
-        return leftDistance.getVoltage()/1024;
-        
     }
     /**
      * This function is run once each time the robot enters autonomous mode
@@ -80,6 +68,8 @@ public class Robot extends IterativeRobot {
         
         //train.driveFoward(.3, Math.PI*3*6);
         //train.turn(.3, 360);
+        
+        sonar.setAutomaticMode(true);
     }
 
     
@@ -91,7 +81,7 @@ public class Robot extends IterativeRobot {
         //train.setSpeeds(-stick.getRawAxis(1)*0.4, -stick.getRawAxis(5)*0.4);
         //train.getDistance();
         //train.updateDashboard();
-        SmartDashboard.putNumber("LeftDistance", getDistance());
+        SmartDashboard.putNumber("Distance (in): ", sonar.getRangeInches());
     }
 
     /**

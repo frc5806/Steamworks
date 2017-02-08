@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain {
-	static final double MAX_SPEED = 0.5;
+	static final double MAX_SPEED = 0.8;
 	static final double MIN_SPEED = 0.1;
 	static final double FORWARD_DAMPENING_THRESHOLD = 6*Math.PI/2.0;
-	static final double TURN_DAMPENING_THRESHOLD = 30.0;
-	static final double LEFT_ENCODER_TO_DIST = 6*Math.PI / 355.0;
-	static final double RIGHT_ENCODER_TO_DIST = 6*Math.PI / 359.0;
+	static final double TURN_DAMPENING_THRESHOLD = 50.0;
+	static final double LEFT_ENCODER_TO_DIST = 6*Math.PI / 1024.0;
+	static final double RIGHT_ENCODER_TO_DIST = 6*Math.PI / 1024.0;
 	static final double FORWARD_CORRECTION_FACTOR = 0.1;
 	static final double TURN_CORRECTION_FACTOR = 0.1;
 	
@@ -26,7 +26,7 @@ public class DriveTrain {
 
 	public DriveTrain() {
 		lEncoder = new Encoder(2, 3);
-		rEncoder = new Encoder(4, 5);
+		rEncoder = new Encoder(0, 1);
 		lMotor = new Victor(9);
 		rMotor = new Victor(8);
 		ahrs = new AHRS(SPI.Port.kMXP);
@@ -68,7 +68,7 @@ public class DriveTrain {
 	 * Set speed to negative to turn the opposite direction.
 	 */
 	// Don't try negative speed for now
-	public void turn(double speed, double degrees) {
+	public void turn(double speed, double degrees, double threshold) {
 		lEncoder.reset();
 		rEncoder.reset();
 		
@@ -79,12 +79,13 @@ public class DriveTrain {
 			degreesTurned = Math.abs(ahrs.getAngle() - startingAngle);
 			
 			double speedCorrection = TURN_CORRECTION_FACTOR * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
-			speedCorrection = Math.min(Math.max(speedCorrection, -startingSpeed), startingSpeed);
+			speedCorrection = Math.min(Math.max(speedCorrection, -speed), speed);
 			speedCorrection = 0;
 			lMotor.set(Math.max(speed-speedCorrection, 0));
 			rMotor.set(Math.min(-(speed+speedCorrection), 0));
 			
 			if(degrees-degreesTurned < TURN_DAMPENING_THRESHOLD) speed = Math.max(Math.min(0.1, startingSpeed), ((degrees-degreesTurned)/TURN_DAMPENING_THRESHOLD)*startingSpeed);
+			//if(degrees-degreesTurned < TURN_DAMPENING_THRESHOLD) speed = 0.1;
 			
 			SmartDashboard.putNumber("speedCorrection", speedCorrection);
 			SmartDashboard.putNumber("degreesTurned", degreesTurned);
@@ -92,6 +93,10 @@ public class DriveTrain {
 		} while(degreesTurned < degrees);
 		lMotor.set(0);
 		rMotor.set(0);
+	}
+	
+	public void turn(double speed, double distance) {
+		this.turn(speed, distance, TURN_DAMPENING_THRESHOLD);
 	}
 	
 	public void setSpeeds(double lSpeed, double rSpeed) {

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,7 +34,8 @@ public class Robot extends IterativeRobot {
 	Counter gearEncoder;
 	Victor spinnyMotor;
 	NeoMagic neoMagic;
-	Ultrasonic sonar;
+	DistanceSensor sonar;
+	GearHalf leftHalf;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -43,10 +45,9 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		train = new DriveTrain();
 		stick = new Joystick(0);
-		neoMagic = new NeoMagic();
+		//neoMagic = new NeoMagic();
 		
-		spinnyMotor = new Victor(2);
-		sonar = new Ultrasonic(trigPin, echoPin);
+		leftHalf = new GearHalf(2, 5, 4, -1);
 	}
 	
 	/**
@@ -72,33 +73,33 @@ public class Robot extends IterativeRobot {
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
-		//gearEncoder.reset();
 		
-		//train.turn(0.5, 89.75, 40);
-		//train.turn(0.5, 89.75, 40);
+		leftHalf.calibrate();
 		
+		//leftHalf.calibrate();
+		//leftHalf.setPosition(50);
 		/*train.driveFoward(0.5, 6.5*12);
 		train.turn(0.5, 89, 30);
 		train.turn(0.5, 89, 30);
 		train.driveFoward(0.5, 2*12+6.5);*/
 
-		//gearEncoder.reset();
-		
-		sonar.setAutomaticMode(true);
 	}
 
 	
 	@Override
 	public void teleopPeriodic() {
-		//spinnyMotor.set(stick.getRawAxis(1));
-		//SmartDashboard.putNumber("touchless", gearEncoder.get());
-		//train.setSpeeds(1, 1);
-		//train.setSpeeds(-stick.getRawAxis(1)*0.5, -stick.getRawAxis(5)*0.5);
-		//train.getDistance();
-		//train.updateDashboard();
-		//spinnyMotor.set(-stick.getRawAxis(1)*0.4);
-		//SmartDashboard.putNumber("touchlessInch", enc.get() / 20.0);
-		SmartDashboard.putNumber("Distance (in): ", sonar.getRangeInches());
+		if(stick.getRawButton(2)) {
+			leftHalf.setPosition(0.3, 100);
+		}
+		if(stick.getRawButton(3)) {
+			leftHalf.setPosition(0.3, 20);
+		}
+
+		SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
+		SmartDashboard.putNumber("pos", leftHalf.getPosition());
+		SmartDashboard.putNumber("lastEnc", leftHalf.lastEncoder);
+		//SmartDashboard.putBoolean("limit", leftHalf.limitSwitch.get());
+		//leftHalf.setSpeed(stick.getRawAxis(1)*0.5);
 	}
 
 	/**

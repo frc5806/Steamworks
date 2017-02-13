@@ -11,8 +11,8 @@ public class GearHalf {
 	int lastEncoder = 0;
 	int lastDirection = 1;
 	
-	final double MIN_SPEED = 0.1;
-	final double ERROR_DAMPENING_THRESHOLD = 0.1;
+	final static double MIN_SPEED = 0.1;
+	final static double ERROR_DAMPENING_THRESHOLD = 0.1;
 
 	Victor motor;
 	Counter encoder;

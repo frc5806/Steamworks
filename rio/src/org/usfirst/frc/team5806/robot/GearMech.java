@@ -3,7 +3,7 @@ package org.usfirst.frc.team5806.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GearMech {
-	GearHalf right, left;
+	GearHalf left, right;
 	public GearMech() {
 		left = new GearHalf(2, 5, 4, -1);
 	}
@@ -14,10 +14,12 @@ public class GearMech {
 	}
 	
 	public void open() {
-		
+		left.setPosition(0.3, 100);
+		right.setPosition(0.3, 100);
 	}
 	public void close() {
-		
+		left.setPosition(0.3, 20);
+		right.setPosition(0.3, 20);
 	}
 	
 	// Positive position is left

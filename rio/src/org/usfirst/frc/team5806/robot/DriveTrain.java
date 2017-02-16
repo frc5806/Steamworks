@@ -50,6 +50,7 @@ public class DriveTrain {
 		do {
 			distanceTraveled = ((Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)+Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST)) / 2.0);
 			
+			//correct for motor drift
 			double speedCorrection = FORWARD_CORRECTION_FACTOR * (Math.abs(lEncoder.get()*LEFT_ENCODER_TO_DIST)-Math.abs(rEncoder.get()*RIGHT_ENCODER_TO_DIST));
 			speedCorrection = Math.min(Math.max(speedCorrection, -startingSpeed), startingSpeed);
 			lMotor.set(speed-speedCorrection);

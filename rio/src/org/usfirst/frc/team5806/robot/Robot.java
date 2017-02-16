@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	static final int trigPin = 9, echoPin = 8;
+	static double shooterSpeed = 0.75;
 	
 	DriveTrain train;
 	Joystick stick;
@@ -35,7 +36,7 @@ public class Robot extends IterativeRobot {
 	Victor spinnyMotor;
 	NeoMagic neoMagic;
 	DistanceSensor sonar;
-	GearHalf leftHalf;
+	Victor shooter;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -46,8 +47,8 @@ public class Robot extends IterativeRobot {
 		train = new DriveTrain();
 		stick = new Joystick(0);
 		//neoMagic = new NeoMagic();
-		
-		leftHalf = new GearHalf(2, 5, 4, -1);
+		shooter = new Victor(5);
+		SmartDashboard.putNumber("shooterSpeed", 0.0);
 	}
 	
 	/**
@@ -73,9 +74,8 @@ public class Robot extends IterativeRobot {
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
-		
-		leftHalf.calibrate();
-		
+		shooter.set(0); //make sure shooter off to start
+				
 		//leftHalf.calibrate();
 		//leftHalf.setPosition(50);
 		/*train.driveFoward(0.5, 6.5*12);
@@ -88,16 +88,22 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		if(stick.getRawButton(2)) {
+		shooterSpeed = SmartDashboard.getNumber("shooterSpeed", 0.0);
+		/*if(stick.getRawButton(2)) {
 			leftHalf.setPosition(0.3, 100);
 		}
 		if(stick.getRawButton(3)) {
 			leftHalf.setPosition(0.3, 20);
+		}*/
+		if(true) {//stick.getRawButton(4)) {
+			shooter.set(shooterSpeed);
+		} else {
+			shooter.set(0);
 		}
 
-		SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
+		/*SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
 		SmartDashboard.putNumber("pos", leftHalf.getPosition());
-		SmartDashboard.putNumber("lastEnc", leftHalf.lastEncoder);
+		SmartDashboard.putNumber("lastEnc", leftHalf.lastEncoder);*/
 		//SmartDashboard.putBoolean("limit", leftHalf.limitSwitch.get());
 		//leftHalf.setSpeed(stick.getRawAxis(1)*0.5);
 	}

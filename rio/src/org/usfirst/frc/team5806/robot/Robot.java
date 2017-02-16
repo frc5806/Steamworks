@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.networktables.NetworkTable; import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,87 +25,87 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	static final int trigPin = 9, echoPin = 8;
-	
-	DriveTrain train;
-	Joystick stick;
-	
-	Counter gearEncoder;
-	Victor spinnyMotor;
-	NeoMagic neoMagic;
-	DistanceSensor sonar;
-	GearHalf leftHalf;
+    static final int trigPin = 9, echoPin = 8;
+    
+    DriveTrain train;
+    Joystick stick;
+    
+    Counter gearEncoder;
+    Victor spinnyMotor;
+    NeoMagic neoMagic;
+    DistanceSensor sonar;
+    GearHalf leftHalf;
 
-	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
-	@Override
-	public void robotInit() {
-		train = new DriveTrain();
-		stick = new Joystick(0);
-		//neoMagic = new NeoMagic();
-		
-		leftHalf = new GearHalf(2, 5, 4, -1);
-	}
-	
-	/**
-	 * This function is run once each time the robot enters autonomous mode
-	 */
-	@Override
-	public void autonomousInit() {
-	}
+    /**
+     * This function is run when the robot is first started up and should be
+     * used for any initialization code.
+     */
+    @Override
+    public void robotInit() {
+        train = new DriveTrain();
+        stick = new Joystick(0);
+        //neoMagic = new NeoMagic();
+        
+        leftHalf = new GearHalf(2, 5, 4, -1);
+    }
+    
+    /**
+     * This function is run once each time the robot enters autonomous mode
+     */
+    @Override
+    public void autonomousInit() {
+    }
 
-	/**
-	 * This function is called periodically during autonomous
-	 */
-	@Override
-	public void autonomousPeriodic() {
-	}
+    /**
+     * This function is called periodically during autonomous
+     */
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-	/**
-	 * This function is called once each time the robot enters tele-operated
-	 * mode
-	 */
-	@Override
-	public void teleopInit() {
-		train.lEncoder.reset();
-		train.rEncoder.reset();
-		train.ahrs.reset();
-		
-		leftHalf.calibrate();
-		
-		//leftHalf.calibrate();
-		//leftHalf.setPosition(50);
-		/*train.driveFoward(0.8, 0.1, 0.1, 0.2, 1*12*6.5);
-		train.turn(0.8, 0.1, 0.1, 0.2, 90);
-		train.turn(0.8, 0.1, 0.1, 0.2, 90);
+    /**
+     * This function is called once each time the robot enters tele-operated
+     * mode
+     */
+    @Override
+    public void teleopInit() {
+        train.lEncoder.reset();
+        train.rEncoder.reset();
+        train.ahrs.reset();
+        
+        leftHalf.calibrate();
+        
+        //leftHalf.calibrate();
+        //leftHalf.setPosition(50);
+        /*train.driveFoward(0.8, 0.1, 0.1, 0.2, 1*12*6.5);
+        train.turn(0.8, 0.1, 0.1, 0.2, 90);
+        train.turn(0.8, 0.1, 0.1, 0.2, 90);
         train.driveFoward(0.8, 0.1, 0.1, 0.2, 2*12*6.5);*/
 
-	}
+    }
 
-	
-	@Override
-	public void teleopPeriodic() {
-		if(stick.getRawButton(2)) {
-			leftHalf.setPosition(0.3, 100);
-		}
-		if(stick.getRawButton(3)) {
-			leftHalf.setPosition(0.3, 20);
-		}
+    
+    @Override
+    public void teleopPeriodic() {
+        if(stick.getRawButton(2)) {
+            leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 100);
+        }
+        if(stick.getRawButton(3)) {
+            leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 20);
+        }
 
-		SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
-		SmartDashboard.putNumber("pos", leftHalf.getPosition());
-		SmartDashboard.putNumber("lastEnc", leftHalf.lastEncoder);
-		//SmartDashboard.putBoolean("limit", leftHalf.limitSwitch.get());
-		//leftHalf.setSpeed(stick.getRawAxis(1)*0.5);
-	}
+        SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
+        SmartDashboard.putNumber("pos", leftHalf.getPosition());
+        SmartDashboard.putNumber("lastEnc", leftHalf.lastEncoder);
+        //SmartDashboard.putBoolean("limit", leftHalf.limitSwitch.get());
+        //leftHalf.setSpeed(stick.getRawAxis(1)*0.5);
+    }
 
-	/**
-	 * This function is called periodically during test mode
-	 */
-	@Override
-	public void testPeriodic() {
-		LiveWindow.run();
-	}
+    /**
+     * This function is called periodically during test mode
+     */
+    @Override
+    public void testPeriodic() {
+        LiveWindow.run();
+    }
 }

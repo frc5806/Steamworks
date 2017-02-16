@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.networktables.NetworkTable; import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -58,12 +57,12 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 	}
 
-	/**
-	 * This function is called periodically during autonomous
-	 */
-	@Override
-	public void autonomousPeriodic() {
-	}
+    /**
+     * This function is called periodically during autonomous
+     */
+    @Override
+    public void autonomousPeriodic() {
+    }
 
 	/**
 	 * This function is called once each time the robot enters tele-operated
@@ -75,31 +74,27 @@ public class Robot extends IterativeRobot {
 		train.rEncoder.reset();
 		train.ahrs.reset();
 		shooter.set(0); //make sure shooter off to start
-				
-		//leftHalf.calibrate();
-		//leftHalf.setPosition(50);
-		/*train.driveFoward(0.5, 6.5*12);
-		train.turn(0.5, 89, 30);
-		train.turn(0.5, 89, 30);
-		train.driveFoward(0.5, 2*12+6.5);*/
+				        
+        //leftHalf.calibrate();
+        //leftHalf.setPosition(50);
+        /*train.driveFoward(0.8, 0.1, 0.1, 0.2, 1*12*6.5);
+        train.turn(0.8, 0.1, 0.1, 0.2, 90);
+        train.turn(0.8, 0.1, 0.1, 0.2, 90);
+        train.driveFoward(0.8, 0.1, 0.1, 0.2, 2*12*6.5);*/
 
-	}
-
+    }
 	
 	@Override
 	public void teleopPeriodic() {
 		shooterSpeed = SmartDashboard.getNumber("shooterSpeed", 0.0);
-		/*if(stick.getRawButton(2)) {
-			leftHalf.setPosition(0.3, 100);
-		}
-		if(stick.getRawButton(3)) {
-			leftHalf.setPosition(0.3, 20);
-		}*/
-		if(true) {//stick.getRawButton(4)) {
-			shooter.set(shooterSpeed);
-		} else {
-			shooter.set(0);
-		}
+		shooter.set(shooterSpeed);
+		
+		if(stick.getRawButton(2)) {
+            //leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 100);
+        }
+        if(stick.getRawButton(3)) {
+            //leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 20);
+        }
 
 		/*SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
 		SmartDashboard.putNumber("pos", leftHalf.getPosition());
@@ -108,11 +103,11 @@ public class Robot extends IterativeRobot {
 		//leftHalf.setSpeed(stick.getRawAxis(1)*0.5);
 	}
 
-	/**
-	 * This function is called periodically during test mode
-	 */
-	@Override
-	public void testPeriodic() {
-		LiveWindow.run();
-	}
+    /**
+     * This function is called periodically during test mode
+     */
+    @Override
+    public void testPeriodic() {
+        LiveWindow.run();
+    }
 }

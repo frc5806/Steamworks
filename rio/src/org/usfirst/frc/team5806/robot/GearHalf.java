@@ -11,9 +11,6 @@ public class GearHalf {
 	int lastEncoder = 0;
 	int lastDirection = 1;
 	
-	final static double MIN_SPEED = 0.1;
-	final static double ERROR_DAMPENING_THRESHOLD = 0.1;
-
 	Victor motor;
 	Counter encoder;
 	DigitalInput limitSwitch;
@@ -38,24 +35,26 @@ public class GearHalf {
 		encoder.reset();
 	}
 	
-	public void movePosition(double speed, double deltaPosition) {
+	public void movePosition(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double deltaPosition) {
 		int startingPosition = getPosition();
-		double startingSpeed = speed;
+        double speed = minSpeed;
 		long startMillis = System.currentTimeMillis();
 		setSpeed(speed*(int)Math.signum(deltaPosition));
 		while(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (System.currentTimeMillis() - startMillis < 200 || limitSwitch.get())) {
 			SmartDashboard.putNumber("deltaPosition", Math.abs(getPosition()-startingPosition));
 			double error = (Math.abs(deltaPosition) - Math.abs(getPosition()-startingPosition)) / Math.abs(deltaPosition);
-			if(error < ERROR_DAMPENING_THRESHOLD) {
-				speed = MIN_SPEED + ((startingSpeed - MIN_SPEED) * error / ERROR_DAMPENING_THRESHOLD);
-				setSpeed(speed*(int)Math.signum(deltaPosition));
-			}
+            if(1-error < accelLength) {
+				speed = minSpeed + ((maxSpeed - minSpeed) * (1-error) / accelLength);
+            }
+            if(error < deaccelLength) {
+				speed = minSpeed + ((maxSpeed - minSpeed) * error / deaccelLength);
+            }
 		}
 		setSpeed(0);
 	}
 	
-	public void setPosition(double speed, double position) {
-		movePosition(speed, position - getPosition());
+	public void setPosition(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double position) {
+		movePosition(maxSpeed, minSpeed, accelLength, deaccelLength, position - getPosition());
 	}
 	
 	public int getPosition() {

@@ -78,10 +78,10 @@ public class Robot extends IterativeRobot {
 		
 		//leftHalf.calibrate();
 		//leftHalf.setPosition(50);
-		/*train.driveFoward(0.5, 6.5*12);
-		train.turn(0.5, 89, 30);
-		train.turn(0.5, 89, 30);
-		train.driveFoward(0.5, 2*12+6.5);*/
+		/*train.driveFoward(0.8, 0.1, 0.1, 0.2, 1*12*6.5);
+		train.turn(0.8, 0.1, 0.1, 0.2, 90);
+		train.turn(0.8, 0.1, 0.1, 0.2, 90);
+        train.driveFoward(0.8, 0.1, 0.1, 0.2, 2*12*6.5);*/
 
 	}
 

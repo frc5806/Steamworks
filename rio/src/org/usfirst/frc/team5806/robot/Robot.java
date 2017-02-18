@@ -30,12 +30,10 @@ public class Robot extends IterativeRobot {
 	
 	DriveTrain train;
 	Joystick stick;
+	Shooter shooter;
 	
-	Counter gearEncoder;
-	Victor spinnyMotor;
 	NeoMagic neoMagic;
-	DistanceSensor sonar;
-	Victor shooter, turner;
+	DistanceSensor sonar;	
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -45,9 +43,8 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		//train = new DriveTrain();
 		stick = new Joystick(0);
-		shooter = new Victor(5);
-		turner = new Victor(6);
-
+		shooter = new Shooter();
+		
 		//neoMagic = new NeoMagic();
 		SmartDashboard.putNumber("shooterSpeed", 0.0);
 	}
@@ -75,7 +72,6 @@ public class Robot extends IterativeRobot {
 		/*train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();		*/
-		shooter.set(0);
 				        
         //leftHalf.calibrate();
         //leftHalf.setPosition(50);
@@ -87,23 +83,16 @@ public class Robot extends IterativeRobot {
     }
 	
 	@Override
-	public void teleopPeriodic() {		
-		shooterSpeed = SmartDashboard.getNumber("shooterSpeed", 0.0);
-		shooter.set(shooterSpeed);
-		turner.set(0.3);
-		
+	public void teleopPeriodic() {				
 		if(stick.getRawButton(2)) {
-            //leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 100);
+			shooter.rampUp();
         }
         if(stick.getRawButton(3)) {
-            //leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 20);
+        	shooter.rampDown();
         }
-
-		/*SmartDashboard.putNumber("encoder", leftHalf.encoder.get());
-		SmartDashboard.putNumber("pos", leftHalf.getPosition());
-		SmartDashboard.putNumber("lastEnc", leftHalf.lastEncoder);*/
-		//SmartDashboard.putBoolean("limit", leftHalf.limitSwitch.get());
-		//leftHalf.setSpeed(stick.getRawAxis(1)*0.5);
+        
+        shooter.updateSubsystem();
+        shooter.updateDashboard();
 	}
 
     /**

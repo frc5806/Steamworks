@@ -1,11 +1,10 @@
 package org.usfirst.frc.team5806.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-public class GearMech {
+public class GearMech extends Subsystem {
 	GearHalf left, right;
 	public GearMech() {
-		left = new GearHalf(2, 5, 4, -1);
+		left = new GearHalf(2, 5, 4, -1, "left");
+		//right = new GearHalf(2, 5, 4, -1, "right");
 	}
 	
 	public void calibrate() {
@@ -19,30 +18,31 @@ public class GearMech {
 	}
 	public void close() {
 		left.setPosition(0.3, 0.15, 0.1, 0.1, 20);
-		right.setPosition(0.3, 0.15, 0.1, 0.1, 20);	}
+		right.setPosition(0.3, 0.15, 0.1, 0.1, 20);	
+	}
 	
 	// Positive position is left
 	//TODO: right now this just uses the left position for stuff, gotta be fixed
 	public void moveDirection(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double deltaPosition) {
-		int leftStartPos = left.getPosition(), rightStartPos = right.getPosition();
-		double speed = minSpeed;		
-		left.setSpeed(speed*(int)Math.signum(deltaPosition));
-		right.setSpeed(speed*(int)Math.signum(deltaPosition));
+		left.movePosition(maxSpeed, minSpeed, accelLength, deaccelLength, deltaPosition);
+		left.movePosition(maxSpeed, minSpeed, accelLength, deaccelLength, deltaPosition);
+	}
 
-		do {
-			SmartDashboard.putNumber("deltaPosition", Math.abs(left.getPosition()-leftStartPos));
-			double error = (Math.abs(deltaPosition) - Math.abs(left.getPosition()-leftStartPos)) / Math.abs(deltaPosition);
-			if(1-error < accelLength) {
-				speed = minSpeed + ((maxSpeed - minSpeed) * (1-error) / accelLength);
-            }
-            if(error < deaccelLength) {
-				speed = minSpeed + ((maxSpeed - minSpeed) * error / deaccelLength);
-            }
-            left.setSpeed(speed*(int)Math.signum(deltaPosition));
-			right.setSpeed(speed*(int)Math.signum(deltaPosition));
-		} while(Math.abs(left.getPosition()-leftStartPos) < Math.abs(deltaPosition));
-		
-		left.setSpeed(0);
-		right.setSpeed(0);
+	@Override
+	public void stop() {
+		left.stop();
+		right.stop();
+	}
+
+	@Override
+	public void updateSubsystem() {
+		left.updateSubsystem();
+		right.updateSubsystem();
+	}
+
+	@Override
+	public void updateDashboard() {
+		left.updateDashboard();
+		right.updateDashboard();
 	}
 }

@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class DriveTrain {
+public class DriveTrain extends Subsystem {
     static final double MAX_SPEED = 0.8;
     static final double MIN_SPEED = 0.1;
     static final double FORWARD_DAMPENING_THRESHOLD = 6*Math.PI/2.0;
@@ -42,7 +42,6 @@ public class DriveTrain {
         lEncoder.reset();
         rEncoder.reset();
         
-        double startingAngle = ahrs.getAngle();
         double speed = minSpeed;
         double distanceTraveled;
 
@@ -117,13 +116,23 @@ public class DriveTrain {
         rMotor.set(rSpeed);
     }
     
+    @Override
     public void updateDashboard() {
         SmartDashboard.putNumber("angle", ahrs.getAngle());
-        SmartDashboard.putNumber("lEncoder", lEncoder.get());
-        SmartDashboard.putNumber("rEncoder", rEncoder.get());
-        SmartDashboard.putNumber("lEncoderDist", lEncoder.get()*LEFT_ENCODER_TO_DIST);
-        SmartDashboard.putNumber("rEncoderDist", rEncoder.get()*RIGHT_ENCODER_TO_DIST);
-        SmartDashboard.putBoolean("lEncoderStopped", lEncoder.getStopped());
-        SmartDashboard.putBoolean("rEncoderStopped", rEncoder.getStopped());
+        SmartDashboard.putNumber("leftEncoer", lEncoder.get());
+        SmartDashboard.putNumber("rightEncoder", rEncoder.get());
+        SmartDashboard.putNumber("leftEncoderDist", lEncoder.get()*LEFT_ENCODER_TO_DIST);
+        SmartDashboard.putNumber("rightEncoderDist", rEncoder.get()*RIGHT_ENCODER_TO_DIST);
+        SmartDashboard.putBoolean("leftEncoderStopped", lEncoder.getStopped());
+        SmartDashboard.putBoolean("rightEncoderStopped", rEncoder.getStopped());
     }
+
+	@Override
+	public void stop() {
+		lMotor.stopMotor();
+		rMotor.stopMotor();
+	}
+
+	@Override
+	public void updateSubsystem() {}
 }

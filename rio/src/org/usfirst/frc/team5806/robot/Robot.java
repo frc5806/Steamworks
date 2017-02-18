@@ -45,7 +45,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		//train = new DriveTrain();
 		stick = new Joystick(0);
-		shooter = new Victor(8);
+		shooter = new Victor(5);
 		turner = new Victor(6);
 
 		//neoMagic = new NeoMagic();

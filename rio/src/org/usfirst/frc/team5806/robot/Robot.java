@@ -35,18 +35,20 @@ public class Robot extends IterativeRobot {
 	Victor spinnyMotor;
 	NeoMagic neoMagic;
 	DistanceSensor sonar;
-	Victor shooter;
-
+	Victor shooter, turner;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
-		train = new DriveTrain();
+		//train = new DriveTrain();
 		stick = new Joystick(0);
+		shooter = new Victor(8);
+		turner = new Victor(6);
+
 		//neoMagic = new NeoMagic();
-		shooter = new Victor(5);
 		SmartDashboard.putNumber("shooterSpeed", 0.0);
 	}
 	
@@ -70,10 +72,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		train.lEncoder.reset();
+		/*train.lEncoder.reset();
 		train.rEncoder.reset();
-		train.ahrs.reset();
-		shooter.set(0); //make sure shooter off to start
+		train.ahrs.reset();		*/
+		shooter.set(0);
 				        
         //leftHalf.calibrate();
         //leftHalf.setPosition(50);
@@ -85,9 +87,10 @@ public class Robot extends IterativeRobot {
     }
 	
 	@Override
-	public void teleopPeriodic() {
+	public void teleopPeriodic() {		
 		shooterSpeed = SmartDashboard.getNumber("shooterSpeed", 0.0);
 		shooter.set(shooterSpeed);
+		turner.set(0.3);
 		
 		if(stick.getRawButton(2)) {
             //leftHalf.setPosition(0.3, 0.15, 0.1, 0.1, 100);

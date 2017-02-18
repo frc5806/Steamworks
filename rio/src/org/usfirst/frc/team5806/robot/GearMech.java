@@ -22,11 +22,10 @@ public class GearMech {
 		right.setPosition(0.3, 0.15, 0.1, 0.1, 20);	}
 	
 	// Positive position is left
+	//TODO: right now this just uses the left position for stuff, gotta be fixed
 	public void moveDirection(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double deltaPosition) {
 		int leftStartPos = left.getPosition(), rightStartPos = right.getPosition();
-		double speed = minSpeed;
-		long startMillis = System.currentTimeMillis();
-		
+		double speed = minSpeed;		
 		left.setSpeed(speed*(int)Math.signum(deltaPosition));
 		right.setSpeed(speed*(int)Math.signum(deltaPosition));
 

@@ -33,7 +33,8 @@ public class Robot extends IterativeRobot {
 	Shooter shooter;
 	
 	NeoMagic neoMagic;
-	DistanceSensor sonar;	
+	DistanceSensor sonar;
+	Servo lin;
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -44,6 +45,7 @@ public class Robot extends IterativeRobot {
 		//train = new DriveTrain();
 		stick = new Joystick(0);
 		shooter = new Shooter();
+		lin = new Servo(1);
 		
 		//neoMagic = new NeoMagic();
 		SmartDashboard.putNumber("shooterSpeed", 0.0);
@@ -90,6 +92,11 @@ public class Robot extends IterativeRobot {
         if(stick.getRawButton(3)) {
         	shooter.rampDown();
         }
+        if(stick.getRawButton(1)) {
+        	shooter.off();
+        }
+        
+        lin.set(1);
         
         shooter.updateSubsystem();
         shooter.updateDashboard();

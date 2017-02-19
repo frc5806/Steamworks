@@ -11,7 +11,7 @@ public class Shooter extends Subsystem {
 		ON, OFF
 	}
 	
-	static final double CRUISE_SPEED = SmartDashboard.getNumber("shooterSpeed", 0.8);
+	static final double CRUISE_SPEED = 0.8;
 	static final double FEEDER_ON_SPEED = 0.3;
 	static final double ACCEL_TIME_MILLIS = 1000;
 	static final double DEACCEL_TIME_MILLIS = 1000;
@@ -24,8 +24,12 @@ public class Shooter extends Subsystem {
 	private long lastUpdate = -1;
 	
 	public Shooter() {
-		shooterMotor = new Victor(5);
+		shooterMotor = new Victor(8);
+		shooterMotor.setInverted(true);
 		feederMotors = new Victor[]{new Victor(6), new Victor(7)};
+		feederMotors[0].setInverted(true);
+		feederMotors[1].setInverted(true);
+		off();
 	}
 	
 	public void rampUp() {
@@ -35,6 +39,11 @@ public class Shooter extends Subsystem {
 	public void rampDown() {
 		feederState = FeederState.OFF;
 		shooterState = ShooterState.RAMP_DOWN;
+	}
+	public void off() {
+		feederState = FeederState.OFF;
+		shooterState = ShooterState.OFF;
+		shooterMotor.set(0);
 	}
 	
 	@Override
@@ -49,28 +58,34 @@ public class Shooter extends Subsystem {
 		switch(shooterState) {
 		case OFF:
 			shooterMotor.set(0);
+			break;
 		case RAMP_UP:
-			if(shooterMotor.get() >= CRUISE_SPEED) {
+			if(Math.abs(shooterMotor.get()) >= CRUISE_SPEED) {
 				shooterMotor.set(CRUISE_SPEED);
 				shooterState = ShooterState.CRUISE;
 				feederState = FeederState.ON;
 			}
-			shooterMotor.set(((System.currentTimeMillis()-lastUpdate) / ACCEL_TIME_MILLIS)*CRUISE_SPEED + shooterMotor.get());
+			shooterMotor.set(((System.currentTimeMillis()-lastUpdate) / ACCEL_TIME_MILLIS)*CRUISE_SPEED + Math.abs(shooterMotor.get()));
+			break;
 		case RAMP_DOWN:
-			if(shooterMotor.get() <= 0) {
+			if(Math.abs(shooterMotor.get()) <= 0) {
 				shooterMotor.set(0);
 				shooterState = ShooterState.OFF;
 			}
-			shooterMotor.set(((System.currentTimeMillis()-lastUpdate) / DEACCEL_TIME_MILLIS)*-CRUISE_SPEED + shooterMotor.get());
+			shooterMotor.set(((System.currentTimeMillis()-lastUpdate) / DEACCEL_TIME_MILLIS)*-CRUISE_SPEED + Math.abs(shooterMotor.get()));
+			break;
 		case CRUISE:
 			shooterMotor.set(CRUISE_SPEED);
+			break;
 		}
 		
 		switch(feederState) {
 		case ON:
 			for(Victor motor : feederMotors) motor.set(FEEDER_ON_SPEED);
+			break;
 		case OFF:
 			for(Victor motor : feederMotors) motor.set(0);
+			break;
 		}
 		
 		lastUpdate = System.currentTimeMillis();
@@ -78,7 +93,8 @@ public class Shooter extends Subsystem {
 
 	@Override
 	public void updateDashboard() {
-		SmartDashboard.putNumber("shooterSpeed", shooterMotor.get());
+		SmartDashboard.putNumber("state", shooterState.ordinal());
+		SmartDashboard.putNumber("shootSpeed", shooterMotor.get());
 		SmartDashboard.putNumber("firstFeederSpeed", feederMotors[0].get());
 		SmartDashboard.putNumber("secondFeederSpeed", feederMotors[0].get());
 	}

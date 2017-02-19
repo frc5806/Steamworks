@@ -97,8 +97,10 @@ public class GearHalf extends Subsystem {
 			} else {
 				state = GearState.OFF;
 			}
+			break;
 		case OFF:
 			setSpeed(0);
+			break;
 		}
 		lastUpdate = System.currentTimeMillis();
 	}

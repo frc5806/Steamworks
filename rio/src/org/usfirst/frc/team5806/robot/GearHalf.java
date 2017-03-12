@@ -36,9 +36,9 @@ public class GearHalf extends Subsystem {
 	}
 	
 	public void calibrate() {
-		motor.set(direction*-0.25);
+		motor.set(direction*-0.3);
 		while(limitSwitch.get()) {
-			
+			updateDashboard();
 		}
 		motor.set(0);
 		lastPosition = 0;
@@ -86,14 +86,16 @@ public class GearHalf extends Subsystem {
 		if(lastUpdate == -1) lastUpdate = System.currentTimeMillis();
 		switch(state) {
 		case MOVING:
-			if(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (System.currentTimeMillis() - startMillis < 200 || limitSwitch.get())) {
+			if(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (System.currentTimeMillis() - startMillis < 2000 || limitSwitch.get())) {
 				double error = (Math.abs(deltaPosition) - Math.abs(getPosition()-startingPosition)) / Math.abs(deltaPosition);
 	            if(1-error < accelLength) {
 					speed = minSpeed + ((maxSpeed - minSpeed) * (1-error) / accelLength);
-	            }
-	            if(error < deaccelLength) {
+	            } else if (error < deaccelLength) {
 					speed = minSpeed + ((maxSpeed - minSpeed) * error / deaccelLength);
+	            } else {
+	            	speed = maxSpeed;
 	            }
+	            setSpeed(speed*(int)Math.signum(deltaPosition));
 			} else {
 				state = GearState.OFF;
 			}
@@ -110,6 +112,7 @@ public class GearHalf extends Subsystem {
 		SmartDashboard.putNumber(name+"GearMotor", motor.get());
 		SmartDashboard.putNumber(name+"GearEncoder", encoder.get());
 		SmartDashboard.putBoolean(name+"GearLimit", limitSwitch.get());
-		SmartDashboard.putNumber("deltaPosition", Math.abs(getPosition()-startingPosition));
+		SmartDashboard.putNumber(name+"GearPosition", getPosition());
+		SmartDashboard.putNumber(name+"GearDeltaPosition", Math.abs(getPosition()-startingPosition));
 	}
 }

@@ -98,36 +98,28 @@ public class CameraClient {
         return img;
     }
     public static void main(String[] args) {
-        CameraClient cam1 = new CameraClient("172.17.125.191", 5440);
-        CameraClient cam2 = new CameraClient("172.17.125.191", 5441);
-        cam1.initSocket();
-        cam2.initSocket();
+        CameraClient cam = new CameraClient("172.17.125.191", 5806);
+        cam.initSocket();
         
-        BufferedImage camFrame1 = null;
-        BufferedImage camFrame2 = null;
-        
-        DisplayImage window1 = null;
-        DisplayImage window2 = null;
+        BufferedImage camFrame = null;
+       
+        DisplayImage window = null;
         
         try {
-            camFrame1 = cam1.readImage();
-            camFrame2 = cam2.readImage();
-            window1 = new DisplayImage(camFrame1);
-            window2 = new DisplayImage(camFrame2);
+            camFrame = cam.readImage();
+            window = new DisplayImage(camFrame);
         } catch (Exception e) {
             e.printStackTrace();
         }
         
         while (true) {
             try {
-                camFrame1 = cam1.readImage();
-                camFrame2 = cam2.readImage();
-                if (camFrame1 == null || camFrame2 == null) {
+                camFrame = cam.readImage();
+                if (camFrame == null) {
                     System.out.println("Dropped Frame");
                     continue;
                 }
-                window1.updateImage(camFrame1);
-                window2.updateImage(camFrame2);
+                window.updateImage(camFrame);
             } catch (Exception e) {
                 e.printStackTrace();
             }

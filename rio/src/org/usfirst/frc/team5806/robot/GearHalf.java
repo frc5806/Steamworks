@@ -54,7 +54,7 @@ public class GearHalf extends Subsystem {
 		this.deltaPosition = deltaPosition;
 		
 		startingPosition = getPosition();
-        speed = minSpeed;
+        	speed = minSpeed;
 		startMillis = System.currentTimeMillis();
 		state = GearState.MOVING;
 		setSpeed(speed*(int)Math.signum(deltaPosition));
@@ -88,14 +88,14 @@ public class GearHalf extends Subsystem {
 		case MOVING:
 			if(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (System.currentTimeMillis() - startMillis < 2000 || limitSwitch.get())) {
 				double error = (Math.abs(deltaPosition) - Math.abs(getPosition()-startingPosition)) / Math.abs(deltaPosition);
-	            if(1-error < accelLength) {
+				if(1-error < accelLength) {
 					speed = minSpeed + ((maxSpeed - minSpeed) * (1-error) / accelLength);
-	            } else if (error < deaccelLength) {
+				} else if (error < deaccelLength) {
 					speed = minSpeed + ((maxSpeed - minSpeed) * error / deaccelLength);
-	            } else {
-	            	speed = maxSpeed;
-	            }
-	            setSpeed(speed*(int)Math.signum(deltaPosition));
+				} else {
+					speed = maxSpeed;
+				}
+				setSpeed(speed*(int)Math.signum(deltaPosition));
 			} else {
 				state = GearState.OFF;
 			}

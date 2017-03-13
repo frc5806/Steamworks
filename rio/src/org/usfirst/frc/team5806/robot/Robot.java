@@ -19,7 +19,8 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.networktables.NetworkTable; import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.networktables.NetworkTable; 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 	static final int trigPin = 9, echoPin = 8;
@@ -27,10 +28,10 @@ public class Robot extends IterativeRobot {
 	static double DRIVE_CAM_POS = 0.3;
 	static final int AUTO_TYPE = 1;
 	
-	static final int OVERRIDE_CAM = 0, CAM_SLIDER = 0, GATE_BALL = 0, GATE_GEAR = 0;  
-	static final int FAST_ZERO_GEAR = 0, ZERO_SLOWLY_GEAR = 0, CLOSE_GEAR = 0, RIGHT_TO_RIGHT = 0, LEFT_TO_RIGHT = 0, LEFT_TO_LEFT = 0, RIGHT_TO_LEFT = 0;  
-	static final int FEEDER_FORWARD = 0, FEEDER_REVERSE = 0, SHOOTER_ON = 0, SHOOTER_OFF = 0, FEEDER_POWER = 0, SHOOTER_POWER = 0;
-	static final int LIFTER_FORWARD = 0, LIFTER_REVERSE = 0, LIFTER_POWER = 0;
+	static final int OVERRIDE_CAM = 18, CAM_SLIDER = 1, GATE_BALL = 2, GATE_GEAR = 1;  
+	static final int FAST_ZERO_GEAR = 7, ZERO_SLOWLY_GEAR = 9, CLOSE_GEAR = 8, RIGHT_TO_RIGHT = 6, LEFT_TO_RIGHT = 13, LEFT_TO_LEFT = 12, RIGHT_TO_LEFT = 11;  
+	static final int FEEDER_FORWARD = 5, FEEDER_REVERSE = 17, SHOOTER_ON = 4, SHOOTER_OFF = 3, FEEDER_POWER = 2, SHOOTER_POWER = 3;
+	static final int LIFTER_CLOCK = 16, LIFTER_COUNTERCLOCK = 14, LIFTER_POWER = 0;
 
 	
 	DriveTrain train;

@@ -3,8 +3,8 @@ package org.usfirst.frc.team5806.robot;
 public class GearMech extends Subsystem {
 	GearHalf left, right;
 	public GearMech() {
-		right = new GearHalf(1, 7, 9, 1, "right");
-		left = new GearHalf(2, 6, 8, 1, "left");
+		right = new GearHalf(1, 7, 4, 1, "right");
+		left = new GearHalf(2, 6, 5, 1, "left");
 	}
 	
 	public void calibrate() {

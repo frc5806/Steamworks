@@ -151,43 +151,45 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {	
-		if(stick.getRawButton(FEEDER_FORWARD)) {
+		if(stickMech.getRawButton(FEEDER_FORWARD)) {
 			shooter.feederState = FeederState.ON;
 		} else {
 			shooter.feederState = FeederState.OFF;
 		}
 
-		if(stick.getRawButton(SHOOTER_ON)) {
+		if(stickMech.getRawButton(SHOOTER_ON)) {
 			shooter.on();
 		}
-		if(stick.getRawButton(SHOOTER_OFF)) {
+		if(stickMech.getRawButton(SHOOTER_OFF)) {
 			shooter.off();
 		}
 
-		if(stick.getRawButton(LIFTER_FORWARD)) {
+		if(stickMech.getRawButton(LIFTER_CLOCK)) {
 			lifterMotor.set(1);
-		} else if(stick.getRawButton(LIFTER_REVERSE)) {
+		} else if(stickMech.getRawButton(LIFTER_COUNTERCLOCK)) {
 			lifterMotor.set(-1);
 		} else {
 			lifterMotor.set(0);
 		}
 
-		if(stick.getRawButton(ZERO_SLOWLY)) {
+		if(stickMech.getRawButton(ZERO_SLOWLY_GEAR)) {
 			gearMech.open();
 		}
-		if(stick.getRawButton(CLOSE_GEAR)) {
+		if(stickMech.getRawButton(CLOSE_GEAR)) {
 			gearMech.close();
 		}
-		if(stick.getRawButton(RIGHT_TO_RIGHT)) {
+		
+		
+		if(stickMech.getRawButton(RIGHT_TO_RIGHT)) {
 			gearMech.right.setSpeed(-0.4);
 		}
-		if(stick.getRawButton(RIGHT_TO_LEFT)) {
+		if(stickMech.getRawButton(RIGHT_TO_LEFT)) {
 			gearMech.right.setSpeed(0.4);
 		}
-		if(stick.getRawButton(LEFT_TO_RIGHT)) {
+		if(stickMech.getRawButton(LEFT_TO_RIGHT)) {
 			gearMech.left.setSpeed(0.4);
 		}
-		if(stick.getRawButton(LEFT_TO_LEFT)) {
+		if(stickMech.getRawButton(LEFT_TO_LEFT)) {
 			gearMech.left.setSpeed(-0.4);
 		}
 
@@ -210,9 +212,6 @@ public class Robot extends IterativeRobot {
 
 
 		train.setDistanceSpeeds(-Math.signum(stickLeft.getRawAxis(1))*Math.floor(10*Math.abs(stickLeft.getRawAxis(1)))/10.0, -Math.signum(stickRight.getRawAxis(1))*Math.floor(10*Math.abs(stickRight.getRawAxis(1)))/10.0);
-
-		gearMech.left.motor.set(stick.getRawAxis(1));
-		gearMech.right.motor.set(stick.getRawAxis(5));
 
 		shooter.updateSubsystem();
 		shooter.updateDashboard();

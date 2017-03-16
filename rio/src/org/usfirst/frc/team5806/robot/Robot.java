@@ -26,7 +26,8 @@ public class Robot extends IterativeRobot {
 	static final int trigPin = 9, echoPin = 8;
 	static double GEAR_BOTTOM_CAM_POS = 0;
 	static double DRIVE_CAM_POS = 0.3;
-	static final int AUTO_TYPE = 1;
+	static double FLOOR_CAM_POS = 0.5;
+	static final int AUTO_TYPE = 0;
 	
 	static final int OVERRIDE_CAM = 18, CAM_SLIDER = 1, GATE_BALL = 2, GATE_GEAR = 1;  
 	static final int FAST_ZERO_GEAR = 7, ZERO_SLOWLY_GEAR = 9, CLOSE_GEAR = 8, RIGHT_TO_RIGHT = 6, LEFT_TO_RIGHT = 13, LEFT_TO_LEFT = 12, RIGHT_TO_LEFT = 11;  
@@ -150,7 +151,7 @@ public class Robot extends IterativeRobot {
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
-		//gearMech.calibrate();
+		gearMech.calibrate();
 	}
 
 	@Override
@@ -226,6 +227,9 @@ public class Robot extends IterativeRobot {
 		}
 		if (stickLeft.getRawButton(3)) {
 			camPos = DRIVE_CAM_POS;
+		}
+		if (stickLeft.getRawButton(4)) {
+			camPos = FLOOR_CAM_POS;
 		}
 
 		camServo.set(camPos);

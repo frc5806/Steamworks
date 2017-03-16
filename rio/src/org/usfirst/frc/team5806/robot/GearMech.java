@@ -18,8 +18,10 @@ public class GearMech extends Subsystem {
 	}
 
 	public void close() {
-		left.setPosition(0.4, 0.25, 0.1, 0.1, 110);
-		right.setPosition(0.4, 0.25, 0.1, 0.1, 110);
+		int closeTarget = 140;
+		
+		left.setPosition(0.4, 0.25, 0.1, 0.1, closeTarget);
+		right.setPosition(0.4, 0.25, 0.1, 0.1, closeTarget);
 	}
 	public void open() {
 		left.setPosition(0.4, 0.25, 0.1, 0.2, -2000);

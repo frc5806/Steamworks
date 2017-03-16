@@ -22,8 +22,8 @@ public class GearMech extends Subsystem {
 		right.setPosition(0.25, 0.25, 0.1, 0.1, 110);
 	}
 	public void open() {
-		left.setPosition(0.4, 0.25, 0.1, 0.2, -200);
-		right.setPosition(0.4, 0.25, 0.1, 0.2, -200);	
+		left.setPosition(0.4, 0.25, 0.1, 0.2, -2000);
+		right.setPosition(0.4, 0.25, 0.1, 0.2, -2000);	
 	}
 		
 	// Positive position is left

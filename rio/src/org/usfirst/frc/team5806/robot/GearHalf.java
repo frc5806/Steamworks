@@ -74,7 +74,7 @@ public class GearHalf extends Subsystem {
 		return lastPosition + lastDirection*Math.abs(encoder.get() - lastEncoder);
 	}
 	
-	private void setSpeed(double speed) {
+	public void setSpeed(double speed) {
 		lastPosition += lastDirection*Math.abs(encoder.get()-lastEncoder);
 		lastEncoder = encoder.get();
 		
@@ -90,6 +90,12 @@ public class GearHalf extends Subsystem {
 	@Override
 	public void updateSubsystem() {
 		if(lastUpdate == -1) lastUpdate = System.currentTimeMillis();
+		if(!limitSwitch.get()) {
+			lastPosition = 0;
+			lastDirection = 1;
+			encoder.reset();
+			motor.set(0);
+		}
 		switch(state) {
 		case MOVING:
 			if(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (System.currentTimeMillis() - startMillis < 2000 || limitSwitch.get())) {
@@ -115,11 +121,6 @@ public class GearHalf extends Subsystem {
 			break;
 		}
 
-		if(!limitSwitch.get()) {
-			lastPosition = 0;
-			lastDirection = 1;
-			encoder.reset();
-		}
 
 		lastUpdate = System.currentTimeMillis();
 	}

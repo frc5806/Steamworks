@@ -12,6 +12,11 @@ public class GearMech extends Subsystem {
 		right.calibrate();
 	}
 	
+	public void fastCalibrate() {
+		left.fastCalibrate();
+		right.fastCalibrate();
+	}
+
 	public void close() {
 		left.setPosition(0.25, 0.25, 0.1, 0.1, 110);
 		right.setPosition(0.25, 0.25, 0.1, 0.1, 110);

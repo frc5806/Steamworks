@@ -74,9 +74,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		train = new DriveTrain();
-		stickLeft = new Joystick(0);
+		stickMech = new Joystick(0);
+		stickLeft = new Joystick(2);
 		stickRight = new Joystick(1);
-		stickMech = new Joystick(2);
 		shooter = new Shooter();
 		lifterMotor = new Victor(3);
 		lifterMotor.setInverted(true);
@@ -146,7 +146,7 @@ public class Robot extends IterativeRobot {
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
-		gearMech.calibrate();
+		//gearMech.calibrate();
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class Robot extends IterativeRobot {
 		}
 
 		// Open slowly
-		if(stickMech.getRawButton(ZERO_SLOWLY)) {
+		if(stickMech.getRawButton(ZERO_SLOWLY_GEAR)) {
 			gearMech.open();
 		}
 		// Open fast
@@ -222,6 +222,7 @@ public class Robot extends IterativeRobot {
 		camServo.set(camPos);
 
 
+		
 		train.setDistanceSpeeds(-Math.signum(stickLeft.getRawAxis(1))*Math.floor(10*Math.abs(stickLeft.getRawAxis(1)))/10.0, -Math.signum(stickRight.getRawAxis(1))*Math.floor(10*Math.abs(stickRight.getRawAxis(1)))/10.0);
 
 		shooter.updateSubsystem();

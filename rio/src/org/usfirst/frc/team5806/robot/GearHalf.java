@@ -50,7 +50,7 @@ public class GearHalf extends Subsystem {
 	public void fastCalibrate() {
 		startFastCalibration = System.currentTimeMillis();
 		state = GearState.FAST_CALIBRATION;
-		motor.set(direction*-0.8);
+		motor.set(direction*-0.9);
 	}
 	
 	public void movePosition(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double deltaPosition) {
@@ -115,8 +115,8 @@ public class GearHalf extends Subsystem {
 			}
 			break;
 		case FAST_CALIBRATION:
-			if(!limitSwitch.get() || System.currentTimeMillis() - startFastCalibration > 1000) {
-				setPosition(0.4, 0.25, 0.1, 0.2, -200);
+			if(!limitSwitch.get() || System.currentTimeMillis() - startFastCalibration > 500) {
+				setPosition(0.45, 0.45, 0.1, 0.2, -200);
 			}
 		case OFF:
 			break;

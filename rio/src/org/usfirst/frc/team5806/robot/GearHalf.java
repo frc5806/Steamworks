@@ -99,7 +99,7 @@ public class GearHalf extends Subsystem {
 		}
 		switch(state) {
 		case MOVING:
-			if(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (System.currentTimeMillis() - startMillis < 2000 || limitSwitch.get())) {
+			if(Math.abs(getPosition()-startingPosition) < Math.abs(deltaPosition) && (Math.signum(deltaPosition) > 0 || limitSwitch.get())) {
 				double error = (Math.abs(deltaPosition) - Math.abs(getPosition()-startingPosition)) / Math.abs(deltaPosition);
 				if(1-error < accelLength) {
 					speed = minSpeed + ((maxSpeed - minSpeed) * (1-error) / accelLength);

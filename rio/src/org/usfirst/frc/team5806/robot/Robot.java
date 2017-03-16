@@ -168,9 +168,9 @@ public class Robot extends IterativeRobot {
 
 		// Lifter (off if no button pushed)
 		if(stickMech.getRawButton(LIFTER_CLOCK)) {
-			lifterMotor.set(1);
+			lifterMotor.set(Math.abs(stickMech.getRawAxis(LIFTER_POWER)));
 		} else if(stickMech.getRawButton(LIFTER_COUNTERCLOCK)) {
-			lifterMotor.set(-1);
+			lifterMotor.set(-Math.abs(stickMech.getRawAxis(LIFTER_POWER)));
 		} else {
 			lifterMotor.set(0);
 		}

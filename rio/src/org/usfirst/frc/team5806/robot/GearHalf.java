@@ -110,6 +110,7 @@ public class GearHalf extends Subsystem {
 				setSpeed(speed*(int)Math.signum(deltaPosition));
 			} else {
 				state = GearState.OFF;
+				setSpeed(0);
 			}
 			break;
 		case FAST_CALIBRATION:
@@ -117,7 +118,6 @@ public class GearHalf extends Subsystem {
 				setPosition(0.4, 0.25, 0.1, 0.2, -200);
 			}
 		case OFF:
-			setSpeed(0);
 			break;
 		}
 

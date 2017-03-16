@@ -231,6 +231,9 @@ public class Robot extends IterativeRobot {
 		if (stickLeft.getRawButton(4)) {
 			camPos = FLOOR_CAM_POS;
 		}
+		if(stickMech.getRawButton(OVERRIDE_CAM)) {
+			camPos = (stickMech.getRawAxis(CAM_SLIDER)+1.0)/2.0;
+		}
 
 		camServo.set(camPos);
 

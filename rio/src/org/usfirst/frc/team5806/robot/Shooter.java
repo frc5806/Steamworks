@@ -38,7 +38,7 @@ public class Shooter extends Subsystem {
 		feederMotors = new Victor[]{new Victor(6), new Victor(5)};//, new Victor(5)};
 		feederMotors[0].setInverted(true);
 		feederMotors[1].setInverted(true);
-		encoder = new Encoder(4, 5);
+		encoder = new Encoder(8, 9);
 		SmartDashboard.putNumber("topShooterSpeed", 0.75);
 		off();
 	}

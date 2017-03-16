@@ -33,6 +33,7 @@ public class GearHalf extends Subsystem {
 		this.name = name;
 		
 		encoder.reset();
+		motor.set(0);
 	}
 	
 	public void calibrate() {

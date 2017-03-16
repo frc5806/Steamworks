@@ -19,38 +19,31 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.networktables.NetworkTable; import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.networktables.NetworkTable; 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- */
 public class Robot extends IterativeRobot {
 	static final int trigPin = 9, echoPin = 8;
-	static double shooterSpeed = 0.75;
+	static double GEAR_BOTTOM_CAM_POS = 0;
+	static double DRIVE_CAM_POS = 0.3;
+	static final int AUTO_TYPE = 1;
+	
+	static final int OVERRIDE_CAM = 18, CAM_SLIDER = 1, GATE_BALL = 2, GATE_GEAR = 1;  
+	static final int FAST_ZERO_GEAR = 7, ZERO_SLOWLY_GEAR = 9, CLOSE_GEAR = 8, RIGHT_TO_RIGHT = 6, LEFT_TO_RIGHT = 13, LEFT_TO_LEFT = 12, RIGHT_TO_LEFT = 11;  
+	static final int FEEDER_FORWARD = 5, FEEDER_REVERSE = 17, SHOOTER_ON = 4, SHOOTER_OFF = 3, FEEDER_POWER = 2, SHOOTER_POWER = 3;
+	static final int LIFTER_CLOCK = 16, LIFTER_COUNTERCLOCK = 14, LIFTER_POWER = 0;
+
 	
 	DriveTrain train;
-	Joystick stickLeft;
-	Joystick stickRight;
+	Joystick stickLeft, stickRight, stickMech;
 	Shooter shooter;
 	GearMech gearMech;
 	UsbCamera camera;
-	
-	NeoMagic neoMagic;
-	DistanceSensor sonar;
 	Servo camServo, gateServo;
 	Victor lifterMotor;
-	boolean gateOpen = true;
+
+	double camPos = DRIVE_CAM_POS;
 	
-	public enum CamState {
-		BOTTOM_GEAR, DRIVE_VIEW
-	}
-	CamState camState = CamState.DRIVE_VIEW;
-	
-	static final int AUTO_TYPE = 1;
 	
 	public class MyThread extends Thread
 	{
@@ -83,16 +76,13 @@ public class Robot extends IterativeRobot {
 		train = new DriveTrain();
 		stickLeft = new Joystick(0);
 		stickRight = new Joystick(1);
-		//shooter = new Shooter();
-		//lifterMotor = new Victor(3);
-		//lifterMotor.setInverted(true);
-		//gateServo = new Servo(7);
-		//gearMech = new GearMech();
+		stickMech = new Joystick(2);
+		shooter = new Shooter();
+		lifterMotor = new Victor(3);
+		lifterMotor.setInverted(true);
+		gateServo = new Servo(7);
+		gearMech = new GearMech();
 		camServo = new Servo(0);
-		//sonar = new DistanceSensor();
-		
-		//neoMagic = new NeoMagic();
-		SmartDashboard.putNumber("shooterSpeed", 0.0);
 	}
 	
 	/**
@@ -100,7 +90,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		if(AUTO_TYPE == 0) {
+		if(AUTO_TYPE == 0) { // forward
 			train.driveFoward(0.5, 0.2, 0.2, 0.1, 5*12, 1);
 		} if(AUTO_TYPE == 1) { // left hard
 			train.driveFoward(0.4, 0.2, 0.2, 0.2, 9.1*12, 1);
@@ -115,32 +105,34 @@ public class Robot extends IterativeRobot {
 			thread.start();
 			gateServo.set(0.9);
 			train.driveFoward(0.8, 0.2, 0.2, 0.3, 9.5*12, 1);
-	        train.turn(0.7, 0.15, 0.2, 0.5, 85, -1);
-	        train.driveFoward(0.8, 0.1, 0.2, 0.3, 2.75*12, 1);
-	        Timer.delay(3);
-	        train.driveFoward(0.6, 0.2, 0.2, 0.3, 4*12, -1);
-	        train.turn(0.7, 0.25, 0.2, 0.5, 85, -1);
-	        train.driveFoward(0.8, 0.2, 0.2, 0.3, 6*12, 1);
-	        train.turn(0.3, 0.15, 0.2, 0.5, 25, 1);
-	        thread.isGood = false;
-	        try {
+			train.turn(0.7, 0.15, 0.2, 0.5, 85, -1);
+			train.driveFoward(0.8, 0.1, 0.2, 0.3, 2.75*12, 1);
+			Timer.delay(3);
+			train.driveFoward(0.6, 0.2, 0.2, 0.3, 4*12, -1);
+			train.turn(0.7, 0.25, 0.2, 0.5, 85, -1);
+			train.driveFoward(0.8, 0.2, 0.2, 0.3, 6*12, 1);
+			train.turn(0.3, 0.15, 0.2, 0.5, 25, 1);
+			thread.isGood = false;
+			try {
 				thread.join();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	        shooter.feederState = FeederState.ON;
+			shooter.feederState = FeederState.ON;
 		}
 	}
 
-    /**
-     * This function is called periodically during autonomous
-     */
-    @Override
-    public void autonomousPeriodic() {
-    	//shooter.updateSubsystem();
-    	//lifterMotor.set(0.3);
-    }
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	@Override
+	public void autonomousPeriodic() {
+		if(AUTO_TYPE == 3) {
+			shooter.updateSubsystem();
+			lifterMotor.set(0.3);
+		}
+	}
 
 	/**
 	 * This function is called once each time the robot enters tele-operated
@@ -149,97 +141,94 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		camera = CameraServer.getInstance().startAutomaticCapture();
-        camera.setResolution(640, 480);
-        
+		camera.setResolution(640, 480);
+
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
-    	//lifterMotor.set(0);
-    	//gearMech.calibrate();
-
-				        
-        //leftHalf.calibrate();
-        //leftHalf.setPosition(50);
-        //train.turn(0.8, 0.1, 0.1, 0.2, 90);
-        //train.driveFoward(0.8, 0.1, 0.1, 0.2, 2*12*6.5);
-
-    }
-	
-	@Override
-	public void teleopPeriodic() {	
-		/*
-		if(stick.getRawButton(1)) {
-			shooter.feederState = FeederState.ON;
-        }
-		if(stick.getRawAxis(2) > 0.7) {
-			gateOpen = false;
-        } 
-		if(stick.getRawAxis(3) > 0.7) {
-			gateOpen = true;	
-        }
-		if(stick.getRawButton(2)) {
-			shooter.on();
-        }
-        if(stick.getRawButton(3)) {
-        	shooter.off();
-        }
-        if(stick.getRawButton(4)) {
-        	lifterMotor.set(1);
-        }
-        if(stick.getRawButton(5)) {
-        	lifterMotor.set(0);
-        }
-        if(stick.getRawButton(6)) {
-        	shooter.feederState = FeederState.OFF;
-        }
-        if(stick.getRawButton(7)) {
-        	gearMech.open();
-        }
-        if(stick.getRawButton(8)) {
-        	gearMech.close();
-        }
-        
-        if(gateOpen) {
-			//gateServo.set(0.9);
-		} else {
-			//gateServo.set(0.0);
-		}*/
-		
-		if (stickLeft.getRawButton(5)) {
-			camState = CamState.BOTTOM_GEAR;
-		}
-		if (stickLeft.getRawButton(3)) {
-			camState = CamState.DRIVE_VIEW;
-		}
-		
-		if (camState == CamState.BOTTOM_GEAR) {
-			camServo.set(0);
-		} 
-		if (camState == CamState.DRIVE_VIEW) {
-			camServo.set(0.3);
-		}
-		
-        
-        train.setDistanceSpeeds(-Math.signum(stickLeft.getRawAxis(1))*Math.floor(10*Math.abs(stickLeft.getRawAxis(1)))/10.0, -Math.signum(stickRight.getRawAxis(1))*Math.floor(10*Math.abs(stickRight.getRawAxis(1)))/10.0);
-        //train.setSpeeds(-Math.signum(stickLeft.getRawAxis(1))*Math.floor(10*Math.abs(stickLeft.getRawAxis(1)))/10.0, -Math.signum(stickLeft.getRawAxis(1))*Math.floor(10*Math.abs(stickLeft.getRawAxis(1)))/10.0);
-        //gearMech.left.motor.set(stick.getRawAxis(1));
-        //gearMech.right.motor.set(stick.getRawAxis(5));
-                
-        //shooter.updateSubsystem();
-        //shooter.updateDashboard();
-        train.updateDashboard();
-        train.updateSubsystem();
-        Timer.delay(0.01);
-        //gearMech.updateSubsystem();
-        //gearMech.updateDashboard();
-        //SmartDashboard.putNumber("ultrasonic", sonar.getRangeInches());
+		gearMech.calibrate();
 	}
 
-    /**
-     * This function is called periodically during test mode
-     */
-    @Override
-    public void testPeriodic() {
-        LiveWindow.run();
-    }
+	@Override
+	public void teleopPeriodic() {	
+		if(stick.getRawButton(FEEDER_FORWARD)) {
+			shooter.feederState = FeederState.ON;
+		} else {
+			shooter.feederState = FeederState.OFF;
+		}
+
+		if(stick.getRawButton(SHOOTER_ON)) {
+			shooter.on();
+		}
+		if(stick.getRawButton(SHOOTER_OFF)) {
+			shooter.off();
+		}
+
+		if(stick.getRawButton(LIFTER_FORWARD)) {
+			lifterMotor.set(1);
+		} else if(stick.getRawButton(LIFTER_REVERSE)) {
+			lifterMotor.set(-1);
+		} else {
+			lifterMotor.set(0);
+		}
+
+		if(stick.getRawButton(ZERO_SLOWLY)) {
+			gearMech.open();
+		}
+		if(stick.getRawButton(CLOSE_GEAR)) {
+			gearMech.close();
+		}
+		if(stick.getRawButton(RIGHT_TO_RIGHT)) {
+			gearMech.right.setSpeed(-0.4);
+		}
+		if(stick.getRawButton(RIGHT_TO_LEFT)) {
+			gearMech.right.setSpeed(0.4);
+		}
+		if(stick.getRawButton(LEFT_TO_RIGHT)) {
+			gearMech.left.setSpeed(0.4);
+		}
+		if(stick.getRawButton(LEFT_TO_LEFT)) {
+			gearMech.left.setSpeed(-0.4);
+		}
+
+
+		if(stickMech.getRawButton(GATE_BALL)) {
+			gateServo.set(0.9);
+		}
+		if(stickMech.getRawButton(GATE_GEAR)) {
+			gateServo.set(0.0);
+		}
+
+		if (stickLeft.getRawButton(5)) {
+			camPos = GEAR_BOTTOM_CAM_POS;
+		}
+		if (stickLeft.getRawButton(3)) {
+			camPos = DRIVE_CAM_POS;
+		}
+
+		camServo.set(camPos);
+
+
+		train.setDistanceSpeeds(-Math.signum(stickLeft.getRawAxis(1))*Math.floor(10*Math.abs(stickLeft.getRawAxis(1)))/10.0, -Math.signum(stickRight.getRawAxis(1))*Math.floor(10*Math.abs(stickRight.getRawAxis(1)))/10.0);
+
+		gearMech.left.motor.set(stick.getRawAxis(1));
+		gearMech.right.motor.set(stick.getRawAxis(5));
+
+		shooter.updateSubsystem();
+		shooter.updateDashboard();
+		train.updateDashboard();
+		train.updateSubsystem();
+		gearMech.updateSubsystem();
+		gearMech.updateDashboard();
+
+		Timer.delay(0.01);
+	}
+
+	/**
+	 * This function is called periodically during test mode
+	 */
+	@Override
+	public void testPeriodic() {
+		LiveWindow.run();
+	}
 }

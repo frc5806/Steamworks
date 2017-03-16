@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
 	
 	static final int OVERRIDE_CAM = 18, CAM_SLIDER = 1, GATE_BALL = 2, GATE_GEAR = 1;  
 	static final int FAST_ZERO_GEAR = 7, ZERO_SLOWLY_GEAR = 9, CLOSE_GEAR = 8, RIGHT_TO_RIGHT = 6, LEFT_TO_RIGHT = 13, LEFT_TO_LEFT = 12, RIGHT_TO_LEFT = 11;  
-	static final int FEEDER_FORWARD = 5, FEEDER_REVERSE = 17, SHOOTER_ON = 4, SHOOTER_OFF = 3, FEEDER_POWER = 2, SHOOTER_POWER = 3;
+	static final int FEEDER_FORWARD = 5, FEEDER_REVERSE = 17, SHOOTER_ON = 4, SHOOTER_OFF = 3, FEEDER_POWER = 3, SHOOTER_POWER = 2;
 	static final int LIFTER_CLOCK = 16, LIFTER_COUNTERCLOCK = 14, LIFTER_POWER = 0;
 
 	
@@ -41,6 +41,8 @@ public class Robot extends IterativeRobot {
 	UsbCamera camera;
 	Servo camServo, gateServo;
 	Victor lifterMotor;
+	
+	boolean safeToLift = false;
 
 	double camPos = DRIVE_CAM_POS;
 	
@@ -143,6 +145,8 @@ public class Robot extends IterativeRobot {
 		camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(640, 480);
 
+		gateServo.set(0.0);
+		
 		train.lEncoder.reset();
 		train.rEncoder.reset();
 		train.ahrs.reset();
@@ -152,8 +156,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {	
 		// Feeder
+		shooter.feederSpeed = Math.abs(stickMech.getRawAxis(FEEDER_POWER)+1)/2.0;
 		if(stickMech.getRawButton(FEEDER_FORWARD)) {
 			shooter.feederState = FeederState.ON;
+		} else if (stickMech.getRawButton(FEEDER_REVERSE)) {
+			shooter.feederState = FeederState.REVERSE;
 		} else {
 			shooter.feederState = FeederState.OFF;
 		}
@@ -167,10 +174,10 @@ public class Robot extends IterativeRobot {
 		}
 
 		// Lifter (off if no button pushed)
-		if(stickMech.getRawButton(LIFTER_CLOCK)) {
-			lifterMotor.set(Math.abs(stickMech.getRawAxis(LIFTER_POWER)));
-		} else if(stickMech.getRawButton(LIFTER_COUNTERCLOCK)) {
-			lifterMotor.set(-Math.abs(stickMech.getRawAxis(LIFTER_POWER)));
+		if(safeToLift && stickMech.getRawButton(LIFTER_CLOCK)) {
+			lifterMotor.set(Math.abs(stickMech.getRawAxis(LIFTER_POWER)+1)/2.0);
+		} else if(safeToLift && stickMech.getRawButton(LIFTER_COUNTERCLOCK)) {
+			lifterMotor.set(-Math.abs(stickMech.getRawAxis(LIFTER_POWER)+1)/2.0);
 		} else {
 			lifterMotor.set(0);
 		}
@@ -190,24 +197,26 @@ public class Robot extends IterativeRobot {
 		
 		
 		if(stickMech.getRawButton(RIGHT_TO_RIGHT)) {
-			gearMech.right.setSpeed(-0.4);
-		}
-		if(stickMech.getRawButton(RIGHT_TO_LEFT)) {
-			gearMech.right.setSpeed(0.4);
-		}
-		if(stickMech.getRawButton(LEFT_TO_RIGHT)) {
-			gearMech.left.setSpeed(0.4);
-		}
-		if(stickMech.getRawButton(LEFT_TO_LEFT)) {
-			gearMech.left.setSpeed(-0.4);
+			gearMech.right.setSpeed(-0.6);
+		} else if(stickMech.getRawButton(RIGHT_TO_LEFT)) {
+			gearMech.right.setSpeed(0.6);
+		} else if(stickMech.getRawButton(LEFT_TO_RIGHT)) {
+			gearMech.left.setSpeed(0.6);
+		} else if(stickMech.getRawButton(LEFT_TO_LEFT)) {
+			gearMech.left.setSpeed(-0.6);
+		} else if (!stickMech.getRawButton(ZERO_SLOWLY_GEAR) && !stickMech.getRawButton(FAST_ZERO_GEAR) && !stickMech.getRawButton(CLOSE_GEAR)) {
+			gearMech.left.setSpeed(0);
+			gearMech.right.setSpeed(0);
 		}
 
 
 		// Set the gate position
 		if(stickMech.getRawButton(GATE_BALL)) {
 			gateServo.set(0.9);
+			safeToLift = true;
 		}
 		if(stickMech.getRawButton(GATE_GEAR)) {
+			safeToLift = false;
 			gateServo.set(0.0);
 		}
 

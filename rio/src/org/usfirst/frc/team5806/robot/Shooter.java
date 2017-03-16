@@ -10,11 +10,11 @@ public class Shooter extends Subsystem {
 		RAMP_UP, RAMP_DOWN, ON, OFF
 	}
 	public enum FeederState{
-		ON, OFF
+		ON, OFF, REVERSE
 	}
 	
 	static final double CRUISE_SPEED = 0.8;
-	static final double FEEDER_ON_SPEED = 0.5;
+	public double feederSpeed = 0.5;
 	static final double ACCEL_TIME = 5;
 	static final double DEACCEL_TIME = 5;
 	static final int TOP_TICKS_PER_SECOND = 1200;
@@ -106,14 +106,12 @@ public class Shooter extends Subsystem {
 		switch(feederState) {
 		case ON:
 			for(int i  = 0; i < feederMotors.length; i++) {
-				if(System.currentTimeMillis() - lastBackups[i] < BACKUP_TIME) {
-					//feederMotors[i].set(-0.2);
-					feederMotors[i].set(FEEDER_ON_SPEED);
-				} else if(System.currentTimeMillis() - lastBackups[i] < FORWARD_TIME+BACKUP_TIME) {
-					feederMotors[i].set(FEEDER_ON_SPEED);
-				} else {
-					lastBackups[i] = System.currentTimeMillis();
-				}
+				feederMotors[i].set(feederSpeed);
+			}
+			break;
+		case REVERSE:
+			for(int i  = 0; i < feederMotors.length; i++) {
+				feederMotors[i].set(-feederSpeed);
 			}
 			break;
 		case OFF:

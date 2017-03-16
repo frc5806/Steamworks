@@ -36,7 +36,7 @@ public class GearHalf extends Subsystem {
 	}
 	
 	public void calibrate() {
-		motor.set(direction*-0.3);
+		motor.set(direction*-0.4);
 		while(limitSwitch.get()) {
 			updateDashboard();
 		}

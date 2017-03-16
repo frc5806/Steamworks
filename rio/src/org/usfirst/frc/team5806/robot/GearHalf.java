@@ -7,16 +7,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GearHalf extends Subsystem {
 	public enum GearState {
-		MOVING, OFF;
+		MOVING, OFF, FAST_CALIBRATION;
 	}
 	int lastPosition = 0;
 	int direction;
 	int lastEncoder = 0;
 	int lastDirection = 1;
 	int startingPosition;
-    double speed;
-    double maxSpeed, minSpeed, accelLength, deaccelLength, deltaPosition;
-	long startMillis;
+	double speed;
+	double maxSpeed, minSpeed, accelLength, deaccelLength, deltaPosition;
+	long startMillis, startFastCalibration;
 	
 	GearState state = GearState.OFF;
 	Victor motor;
@@ -44,6 +44,12 @@ public class GearHalf extends Subsystem {
 		lastPosition = 0;
 		lastDirection = 1;
 		encoder.reset();
+	}
+
+	public void fastCalibrate() {
+		startFastCalibration = System.currentTimeMillis();
+		state = GearState.FAST_CALIBRATION;
+		motor.set(direction*-0.8);
 	}
 	
 	public void movePosition(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double deltaPosition) {
@@ -100,10 +106,21 @@ public class GearHalf extends Subsystem {
 				state = GearState.OFF;
 			}
 			break;
+		case FAST_CALIBRATION:
+			if(!limitSwitch.get() || System.currentTimeMillis() - startFastCalibrate > 1000) {
+				setPosition(0.4, 0.25, 0.1, 0.2, -200);
+			}
 		case OFF:
 			setSpeed(0);
 			break;
 		}
+
+		if(!limitSwitch.get()) {
+			lastPosition = 0;
+			lastDirection = 1;
+			encoder.reset();
+		}
+
 		lastUpdate = System.currentTimeMillis();
 	}
 

@@ -147,8 +147,6 @@ public class Robot extends IterativeRobot {
 		train.rEncoder.reset();
 		train.ahrs.reset();
 		gearMech.calibrate();
-
-		gateServo.set(0.0);
 	}
 
 	@Override

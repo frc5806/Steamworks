@@ -179,6 +179,10 @@ public class Robot extends IterativeRobot {
 		if(stick.getRawButton(ZERO_SLOWLY)) {
 			gearMech.open();
 		}
+		// Open fast
+		if(stick.getRawButton(FAST_ZERO_GEAR)) {
+			gearMech.fastCalibrate();
+		}
 		// Close 
 		if(stick.getRawButton(CLOSE_GEAR)) {
 			gearMech.close();

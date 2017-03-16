@@ -151,12 +151,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {	
+		// Feeder
 		if(stick.getRawButton(FEEDER_FORWARD)) {
 			shooter.feederState = FeederState.ON;
 		} else {
 			shooter.feederState = FeederState.OFF;
 		}
 
+		// Shooter
 		if(stick.getRawButton(SHOOTER_ON)) {
 			shooter.on();
 		}
@@ -164,6 +166,7 @@ public class Robot extends IterativeRobot {
 			shooter.off();
 		}
 
+		// Lifter (off if no button pushed)
 		if(stick.getRawButton(LIFTER_FORWARD)) {
 			lifterMotor.set(1);
 		} else if(stick.getRawButton(LIFTER_REVERSE)) {
@@ -172,9 +175,11 @@ public class Robot extends IterativeRobot {
 			lifterMotor.set(0);
 		}
 
+		// Open slowly
 		if(stick.getRawButton(ZERO_SLOWLY)) {
 			gearMech.open();
 		}
+		// Close 
 		if(stick.getRawButton(CLOSE_GEAR)) {
 			gearMech.close();
 		}
@@ -192,6 +197,7 @@ public class Robot extends IterativeRobot {
 		}
 
 
+		// Set the gate position
 		if(stickMech.getRawButton(GATE_BALL)) {
 			gateServo.set(0.9);
 		}
@@ -199,6 +205,7 @@ public class Robot extends IterativeRobot {
 			gateServo.set(0.0);
 		}
 
+		// Camera on beckman's side
 		if (stickLeft.getRawButton(5)) {
 			camPos = GEAR_BOTTOM_CAM_POS;
 		}

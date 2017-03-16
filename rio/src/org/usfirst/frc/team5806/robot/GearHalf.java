@@ -115,7 +115,7 @@ public class GearHalf extends Subsystem {
 			}
 			break;
 		case FAST_CALIBRATION:
-			if(!limitSwitch.get() || System.currentTimeMillis() - startFastCalibration > 500) {
+			if(!limitSwitch.get() || System.currentTimeMillis() - startFastCalibration > 1000) {
 				setPosition(0.4, 0.25, 0.1, 0.2, -2000);
 			}
 		case OFF:

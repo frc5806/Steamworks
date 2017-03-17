@@ -49,7 +49,7 @@ public class GearHalf extends Subsystem {
 	
 	public void calibrateClosed() {
 		motor.set(0);
-		lastPosition = 110;
+		lastPosition = 140;
 		lastDirection = 1;
 		encoder.reset();
 	}
@@ -61,7 +61,7 @@ public class GearHalf extends Subsystem {
 	}
 
 	public void close() {
-		setPosition(0.4, 0.25, 0.1, 0.1, 110);
+		setPosition(0.4, 0.25, 0.1, 0.1, 140);
 	}	
 
 	public void open() {

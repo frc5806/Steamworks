@@ -18,8 +18,8 @@ public class DriveTrain extends Subsystem {
     static final double FORWARD_CORRECTION_FACTOR = 0.05;
     static final double TURN_CORRECTION_FACTOR = 0.1;
     static final int TOP_TICKS_PER_SECOND = 5000;
-    static final double RATE_TO_SPEED_LEFT = .5/4100;
-    static final double RATE_TO_SPEED_RIGHT = .5/3500;
+    static final double RATE_TO_SPEED_LEFT = .5/3800;
+    static final double RATE_TO_SPEED_RIGHT = .5/3800;
     
     double lEnc, rEnc, lDistSpeed, lRateAvg, lRateAvg2, rRateAvg, rRateAvg2, rDistSpeed, lastLTicks, lastRTicks, lastUpdate, lastLSpeed, lBaseSpeed, rBaseSpeed, lastRSpeed;
     
@@ -179,6 +179,10 @@ public class DriveTrain extends Subsystem {
         SmartDashboard.putNumber("lRate", lEncoder.getRate());
         SmartDashboard.putNumber("rRate", rEncoder.getRate());
         SmartDashboard.putNumber("lastRTicks", lastRTicks);
+        
+        lRateAvg2 = lRateAvg2*0.95 + lEncoder.getRate()*0.05;
+        rRateAvg2 = rRateAvg2*0.95 + rEncoder.getRate()*0.05;
+
     }
 
 	@Override
@@ -191,8 +195,6 @@ public class DriveTrain extends Subsystem {
 	public void updateSubsystem() {
         lRateAvg = lRateAvg*0.5 + lEncoder.getRate()*0.5;
         rRateAvg = rRateAvg*0.5 + rEncoder.getRate()*0.5;
-        lRateAvg2 = lRateAvg2*0.95 + lEncoder.getRate()*0.05;
-        rRateAvg2 = rRateAvg2*0.95 + rEncoder.getRate()*0.05;
 		double errorL = lDistSpeed*TOP_TICKS_PER_SECOND - lRateAvg;
 		lastLSpeed += 0.02 * errorL / (double)(TOP_TICKS_PER_SECOND);
 		lMotor.set(lastLSpeed+lBaseSpeed);

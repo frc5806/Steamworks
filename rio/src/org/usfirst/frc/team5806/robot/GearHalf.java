@@ -46,12 +46,27 @@ public class GearHalf extends Subsystem {
 		lastDirection = 1;
 		encoder.reset();
 	}
+	
+	public void calibrateClosed() {
+		motor.set(0);
+		lastPosition = 110;
+		lastDirection = 1;
+		encoder.reset();
+	}
 
 	public void fastCalibrate() {
 		startFastCalibration = System.currentTimeMillis();
 		state = GearState.FAST_CALIBRATION;
 		motor.set(direction*-0.9);
 	}
+
+	public void close() {
+		setPosition(0.4, 0.25, 0.1, 0.1, 110);
+	}	
+
+	public void open() {
+		setPosition(0.4, 0.25, 0.1, 0.2, -2000);
+	}	
 	
 	public void movePosition(double maxSpeed, double minSpeed, double accelLength, double deaccelLength, double deltaPosition) {
 		this.maxSpeed = maxSpeed;

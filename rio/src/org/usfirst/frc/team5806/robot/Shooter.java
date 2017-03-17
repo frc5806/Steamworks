@@ -75,9 +75,8 @@ public class Shooter extends Subsystem {
 		switch(shooterState) {
 		case RAMP_UP:
 			if(Math.abs(shooterMotors[0].get()) >= CRUISE_SPEED) {
-				for(Victor motor : shooterMotors) motor.set(SmartDashboard.getNumber("topShooterSpeed", 0.7));
+				for(Victor motor : shooterMotors) motor.set(CRUISE_SPEED);
 				shooterState = ShooterState.ON;
-				//feederState = FeederState.ON;
 			}
 			for(Victor motor : shooterMotors) motor.set(((Timer.getFPGATimestamp()-rampUpStart) / ACCEL_TIME)*CRUISE_SPEED);
 			break;
@@ -92,14 +91,15 @@ public class Shooter extends Subsystem {
 			for(Victor motor : shooterMotors) motor.set(0);
 			break;
 		case ON:
-			double ticksPerSecond = (Math.abs(lastTicks)-Math.abs(encoder.get())) / (Timer.getFPGATimestamp() - lastUpdate);
+			/*double ticksPerSecond = (Math.abs(lastTicks)-Math.abs(encoder.get())) / (Timer.getFPGATimestamp() - lastUpdate);
 			double error = CRUISE_SPEED*TOP_TICKS_PER_SECOND - Math.abs(ticksPerSecond);
 			lastDeltaSpeed = 0.045 * error / (CRUISE_SPEED*TOP_TICKS_PER_SECOND);
 			lastSpeed += lastDeltaSpeed;
 			for(Victor motor : shooterMotors) motor.set(lastSpeed);//motor.set(SmartDashboard.getNumber("topShooterSpeed", 0.75));
 			lastTicks = Math.abs(encoder.get());
 			lastTicksPerSecond = ticksPerSecond;
-			lastError = error;
+			lastError = error;*/
+			for(Victor motor : shooterMotors) motor.set(CRUISE_SPEED);
 			break;
 		}
 		

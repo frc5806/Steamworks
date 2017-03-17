@@ -92,16 +92,21 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		if(AUTO_TYPE == 0) { // forward
-			train.driveFoward(0.5, 0.2, 0.2, 0.1, 5*12, 1);
-		} if(AUTO_TYPE == 1) { // left hard
-			train.driveFoward(0.4, 0.2, 0.2, 0.2, 9.1*12, 1);
-			train.turn(0.4, 0.15, 0.3, 0.3, 60, 1);
-			train.driveFoward(0.4, 0.2, 0.2, 0.2, 12, 1);
-		} else if(AUTO_TYPE == 2) { // right hard
-			train.driveFoward(0.4, 0.2, 0.2, 0.2, 8.8*12, 1);
-			train.turn(0.4, 0.15, 0.3, 0.3, 60, -1);
-			train.driveFoward(0.4, 0.2, 0.2, 0.2, 12, 1);
+		if(AUTO_TYPE >= 0 || AUTO_TYPE <= 2) {
+			camServo.set(0.0);
+			gearMech.calibrateClosed();
+			if(AUTO_TYPE == 0) { // forward
+				train.driveFoward(0.5, 0.2, 0.2, 0.1, 5*12, 1);
+			} if(AUTO_TYPE == 1) { // left hard
+				train.driveFoward(0.4, 0.2, 0.2, 0.2, 9.1*12, 1);
+				train.turn(0.4, 0.15, 0.3, 0.3, 60, 1);
+				train.driveFoward(0.4, 0.2, 0.2, 0.2, 12, 1);
+			} else if(AUTO_TYPE == 2) { // right hard
+				train.driveFoward(0.4, 0.2, 0.2, 0.2, 8.8*12, 1);
+				train.turn(0.4, 0.15, 0.3, 0.3, 60, -1);
+				train.driveFoward(0.4, 0.2, 0.2, 0.2, 12, 1);
+			} 
+			gearMech.fastCalibrate();
 		} else if(AUTO_TYPE == 3) {
 			MyThread thread = new MyThread(shooter);
 			thread.start();
@@ -130,6 +135,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		if(AUTO_TYPE >= 0 || AUTO_TYPE <= 2) {
+			gearMech.updateSubsystem();
+		}
 		if(AUTO_TYPE == 3) {
 			shooter.updateSubsystem();
 			lifterMotor.set(0.3);

@@ -12,18 +12,23 @@ public class GearMech extends Subsystem {
 		right.calibrate();
 	}
 	
+	public void calibrateClosed() {
+		left.calibrateClosed();
+		right.calibrateClosed();
+	}
+
 	public void fastCalibrate() {
 		left.fastCalibrate();
 		right.fastCalibrate();
 	}
 
 	public void close() {
-		left.setPosition(0.4, 0.25, 0.1, 0.1, 110);
-		right.setPosition(0.4, 0.25, 0.1, 0.1, 110);
+		left.close();
+		right.close();
 	}
 	public void open() {
-		left.setPosition(0.4, 0.25, 0.1, 0.2, -2000);
-		right.setPosition(0.4, 0.25, 0.1, 0.2, -2000);	
+		left.open();
+		right.open();
 	}
 		
 	// Positive position is left

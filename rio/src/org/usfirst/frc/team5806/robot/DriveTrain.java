@@ -31,13 +31,14 @@ public class DriveTrain extends Subsystem {
     AHRS ahrs;
 
     public DriveTrain() {
-        lEncoder = new Encoder(2, 3);
-        rEncoder = new Encoder(0, 1);
-        rEncoder.setReverseDirection(true);
-        lMotor = new Victor(8);
+        lEncoder = new Encoder(Ports.LEFT_DRIVE_ENCODER[0], Ports.LEFT_DRIVE_ENCODER[1]);
+        lEncoder.setReverseDirection(false);
+        rEncoder = new Encoder(Ports.RIGHT_DRIVE_ENCODER[0], Ports.RIGHT_DRIVE_ENCODER[1]);
+        rEncoder.setReverseDirection(false);
+        lMotor = new Victor(Ports.LEFT_DRIVE);
         lMotor.setInverted(false);
         lMotor.set(0);
-        rMotor = new Victor(9);
+        rMotor = new Victor(Ports.RIGHT_DRIVE);
         rMotor.setInverted(true);
         rMotor.set(0);
         ahrs = new AHRS(SPI.Port.kMXP);
@@ -48,7 +49,6 @@ public class DriveTrain extends Subsystem {
         lEncoder.setDistancePerPulse(1);
         rEncoder.reset();
         rEncoder.setDistancePerPulse(1);
-        rEncoder.setReverseDirection(false);
         
         lastUpdate = Timer.getFPGATimestamp();
         lastLTicks = lEncoder.get();
@@ -80,11 +80,6 @@ public class DriveTrain extends Subsystem {
             lMotor.set(direction*(speed-speedCorrection));
             rMotor.set(direction*(speed+speedCorrection));
             
-            SmartDashboard.putNumber("speedCorrection", speedCorrection);
-            SmartDashboard.putNumber("spppppeeed", speed);
-            SmartDashboard.putNumber("leftMotor", speed-speedCorrection);
-            SmartDashboard.putNumber("rightMotor", speed+speedCorrection);
-            SmartDashboard.putNumber("distanceTraveled", distanceTraveled);
             double error = Math.abs(distance-distanceTraveled) / Math.abs(distance);
             if(1-error < accelLength) {
 				speed = minSpeed + ((maxSpeed - minSpeed) * ((1-error) / accelLength));
@@ -126,11 +121,6 @@ public class DriveTrain extends Subsystem {
 				speed = minSpeed + ((maxSpeed - minSpeed) * error / deaccelLength);
             }
             
-            SmartDashboard.putNumber("speedCorrection", speedCorrection);
-            SmartDashboard.putNumber("spppppeeed", speed);
-            SmartDashboard.putNumber("leftMotor", speed-speedCorrection);
-            SmartDashboard.putNumber("rightMotor", speed+speedCorrection);
-            SmartDashboard.putNumber("degreesTurned", degreesTurned);
             updateDashboard();
         } while(degreesTurned < degrees);
         lMotor.set(0);
@@ -154,21 +144,23 @@ public class DriveTrain extends Subsystem {
     	rBaseSpeed = rDistSpeed*TOP_TICKS_PER_SECOND*RATE_TO_SPEED_RIGHT;
     }
     
+    public void setDistanceSpeedsForDist(double lSpeed, double rSpeed, double lTicks, double rightTicks) {
+    	
+    }
+    
     @Override
     public void updateDashboard() {
         SmartDashboard.putNumber("angle", ahrs.getAngle());
-        SmartDashboard.putNumber("leftEncoer", lEncoder.get());
+        SmartDashboard.putNumber("leftEncoder", lEncoder.get());
         SmartDashboard.putNumber("rightEncoder", rEncoder.get());
         SmartDashboard.putNumber("leftEncoderDist", lEncoder.get()*LEFT_ENCODER_TO_DIST);
         SmartDashboard.putNumber("rightEncoderDist", rEncoder.get()*RIGHT_ENCODER_TO_DIST);
-        SmartDashboard.putBoolean("leftEncoderStopped", lEncoder.getStopped());
-        SmartDashboard.putBoolean("rightEncoderStopped", rEncoder.getStopped());
         SmartDashboard.putNumber("lSpeed", lMotor.get());
         SmartDashboard.putNumber("rSpeed", rMotor.get());
         SmartDashboard.putNumber("lSpeedAvg", lRateAvg2);
         SmartDashboard.putNumber("rSpeedAvg", rRateAvg2);
         SmartDashboard.putNumber("desiredLSpeed", lastLSpeed+lBaseSpeed);
-        SmartDashboard.putNumber("desiredRSpeed", (double)lastRSpeed+rBaseSpeed);
+        SmartDashboard.putNumber("desiredRSpeed", lastRSpeed+rBaseSpeed);
         SmartDashboard.putNumber("lDistSpeed", lDistSpeed);
         SmartDashboard.putNumber("rDistSpeed", rDistSpeed);
         SmartDashboard.putNumber("lBaseSpeed", lBaseSpeed);

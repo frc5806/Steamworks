@@ -13,7 +13,6 @@ public class Shooter extends Subsystem {
 		ON, OFF, REVERSE
 	}
 	
-	static final double CRUISE_SPEED = 0.8;
 	public double feederSpeed = 0.5;
 	static final double ACCEL_TIME = 5;
 	static final double DEACCEL_TIME = 5;
@@ -31,21 +30,22 @@ public class Shooter extends Subsystem {
 	private long[] lastBackups;
 	private int lastTicks = 0;
 	private double lastSpeed = 0, lastTicksPerSecond = 0, lastError = 0, lastDeltaSpeed = 0;
+	public double cruiseSpeed = 0.3;
 	
 	public Shooter() {
-		shooterMotors = new Victor[]{new Victor(4)};
+		shooterMotors = new Victor[]{new Victor(Ports.SHOOTER)};
 		shooterMotors[0].setInverted(true);
-		feederMotors = new Victor[]{new Victor(6), new Victor(5)};//, new Victor(5)};
+		feederMotors = new Victor[]{new Victor(Ports.FEEDERS)};
 		feederMotors[0].setInverted(true);
-		feederMotors[1].setInverted(true);
-		encoder = new Encoder(8, 9);
+		//encoder = new Encoder(Ports.SHOOTER_ENCODER[0], Ports.SHOOTER_ENCODER[1]);
 		SmartDashboard.putNumber("topShooterSpeed", 0.75);
 		off();
+		stop();
 	}
 	
 	public void on() {
 		lastUpdate = -1;
-		lastTicks = encoder.get();
+		//lastTicks = encoder.get();
 		rampUpStart = Timer.getFPGATimestamp();
 		shooterState = ShooterState.ON;
 		//feederState = FeederState.ON;
@@ -66,7 +66,7 @@ public class Shooter extends Subsystem {
 	@Override
 	public void updateSubsystem() {
 		if(lastUpdate == -1) {
-			lastTicks = encoder.get();
+			//lastTicks = encoder.get();
 			lastUpdate = Timer.getFPGATimestamp();
 			lastBackups = new long[]{System.currentTimeMillis(), System.currentTimeMillis()-((BACKUP_TIME+FORWARD_TIME)/2)};
 			return;
@@ -74,18 +74,18 @@ public class Shooter extends Subsystem {
 		if(Timer.getFPGATimestamp() - lastUpdate < SAMPLING_PERIOD) return;
 		switch(shooterState) {
 		case RAMP_UP:
-			if(Math.abs(shooterMotors[0].get()) >= CRUISE_SPEED) {
-				for(Victor motor : shooterMotors) motor.set(CRUISE_SPEED);
+			if(Math.abs(shooterMotors[0].get()) >= cruiseSpeed) {
+				for(Victor motor : shooterMotors) motor.set(cruiseSpeed);
 				shooterState = ShooterState.ON;
 			}
-			for(Victor motor : shooterMotors) motor.set(((Timer.getFPGATimestamp()-rampUpStart) / ACCEL_TIME)*CRUISE_SPEED);
+			for(Victor motor : shooterMotors) motor.set(((Timer.getFPGATimestamp()-rampUpStart) / ACCEL_TIME)*cruiseSpeed);
 			break;
 		case RAMP_DOWN:
 			if(Math.abs(shooterMotors[0].get()) <= 0.05) {
 				for(Victor motor : shooterMotors) motor.set(0);
 				shooterState = ShooterState.OFF;
 			}
-			for(Victor motor : shooterMotors) motor.set(((Timer.getFPGATimestamp()-rampDownStart) / DEACCEL_TIME)*-CRUISE_SPEED);
+			for(Victor motor : shooterMotors) motor.set(((Timer.getFPGATimestamp()-rampDownStart) / DEACCEL_TIME)*-cruiseSpeed);
 			break;
 		case OFF:
 			for(Victor motor : shooterMotors) motor.set(0);
@@ -99,7 +99,7 @@ public class Shooter extends Subsystem {
 			lastTicks = Math.abs(encoder.get());
 			lastTicksPerSecond = ticksPerSecond;
 			lastError = error;*/
-			for(Victor motor : shooterMotors) motor.set(CRUISE_SPEED);
+			for(Victor motor : shooterMotors) motor.set(cruiseSpeed);
 			break;
 		}
 		
